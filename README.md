@@ -1,25 +1,68 @@
-# Portfolio - Mohammed Saqhib's Portfolio
+# Mohammed Saqhib's Portfolio
 
-Portfolio is my personal portfolio website showcasing my journey as an aspiring Data Professional. It features a responsive design, smooth GSAP animations, and sections covering About, Skills, Journey, Projects, and Contact details.
+Welcome to my professional portfolio showcasing my journey as a Data Professional!
 
-### Features
-- **Responsive Design:** Built with HTML5, CSS3, and JavaScript.
-- **Engaging Animations:** Leveraging GSAP for smooth scrolling and effects.
-- **Professional Journey:** Detailed timeline of internships and projects.
-- **Interactive Projects:** Showcases my work with live links.
-- **Contact Section:** Easily connect via LinkedIn, GitHub, Mail, Portfolio, WhatsApp, and Phone.
+## 🌟 Portfolio Versions
 
-### Technologies Used
-- HTML5 & CSS3
-- JavaScript & GSAP
-- Font Awesome Icons
+### 🚀 [3D Interactive Portfolio](3d-portfolio.html)
+Experience my portfolio in an immersive 3D environment with:
+- Interactive 3D navigation
+- 17 featured projects
+- Dynamic particle systems
+- WebGL-powered animations
+- Full keyboard and mouse controls
 
-### Getting Started
-Clone or download the repository and open `index1.html` in your browser.
+### 📄 [Traditional Portfolio](index.html)
+Clean, responsive portfolio with:
+- Modern design
+- Smooth animations
+- Project filtering
+- Mobile-optimized layout
+- Fast loading performance
 
-### Portfolio Website
-Check out my portfolio at [Mohammed Saqhib's Portfolio](https://mohammed-saqhib.github.io/Portfolio/).
+## 🎯 Quick Links
+
+- **Email**: [msaqhib76@gmail.com](mailto:msaqhib76@gmail.com)
+- **LinkedIn**: [Mohammed Saqhib](http://www.linkedin.com/in/mohammed-saqhib-87b8b325a)
+- **GitHub**: [Mohammed-Saqhib](https://github.com/Mohammed-Saqhib)
+- **Live Portfolio**: [Portfolio Website](https://mohammed-saqhib.github.io/Portfolio/)
+
+## 🛠️ Technologies Used
+
+- **Frontend**: HTML5, CSS3, JavaScript ES6+
+- **3D Graphics**: Three.js, WebGL
+- **Animations**: GSAP, CSS Animations
+- **Tools**: Git, VS Code, Python HTTP Server
+
+## 🚦 Getting Started
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Mohammed-Saqhib/Portfolio.git
+   cd Portfolio
+   ```
+
+2. **Start local server**
+   ```bash
+   python -m http.server 8000
+   ```
+
+3. **Open in browser**
+   - Traditional Portfolio: `http://localhost:8000/index.html`
+   - 3D Portfolio: `http://localhost:8000/3d-portfolio.html`
+   - Demo Page: `http://localhost:8000/demo.html`
+
+## 📱 Browser Compatibility
+
+- ✅ Chrome 80+
+- ✅ Firefox 75+
+- ✅ Safari 13+
+- ✅ Edge 80+
+
+## 📧 Contact
+
+Feel free to reach out for collaboration opportunities or just to say hello!
 
 ---
 
-@Developed by Mohammed Saqhib
+**© 2024 Mohammed Saqhib | Aspiring Data Professional | Based in Bengaluru, India**

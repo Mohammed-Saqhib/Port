@@ -391,6 +391,7 @@ ul {
   box-shadow: 0 10px 20px -10px rgba(255, 255, 255, 0.4);
 }
 
+<<<<<<< HEAD
 /* Special styling for 3D portfolio button */
 .cta-secondary[href="3d-portfolio.html"] {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -422,6 +423,8 @@ ul {
   left: 100%;
 }
 
+=======
+>>>>>>> 7a241a0b4fa5f16a43a2d2cbce90242640b640b1
 /* Scroll indicator */
 .scroll-indicator {
   position: absolute;

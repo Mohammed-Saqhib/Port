@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mohammed Saqhib | 3D Portfolio Drive</title>
+    <link rel="shortcut icon" type="image/x-icon" href="photos/logo.png" />
+    <link rel="stylesheet" href="bruno-simon-final.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="loading-screen">
+        <div class="loading-bar-container">
+            <div class="loading-bar"></div>
+        </div>
+        <div class="loading-text">Loading Experience...</div>
+    </div>
+
+    <canvas class="webgl"></canvas>
+
+    <div class="popup">
+        <p>Press 'E' to interact</p>
+    </div>
+
+    <div class="section-panel">
+        <button class="close-button">X</button>
+        <h2 id="panelTitle"></h2>
+        <div id="panelContent"></div>
+    </div>
+
+    <div class="ui-container">
+        <div class="controls-info">
+            <p><strong>Controls:</strong></p>
+            <p>W - Accelerate | S - Brake/Reverse</p>
+            <p>A - Steer Left | D - Steer Right</p>
+            <p>Shift - Drift | R - Reset Car</p>
+        </div>
+    </div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/",
+                "cannon-es": "https://unpkg.com/cannon-es@0.20.0/dist/cannon-es.mjs"
+            }
+        }
+    </script>
+    <script type="module" src="./bruno-simon-final.js"></script>
+</body>
+</html>

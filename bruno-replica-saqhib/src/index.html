@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>Mohammed Saqhib | Interactive 3D Portfolio</title>
+    <meta name="description" content="Aspiring Data Science and Analytics Professional with proficiency in data analysis, data visualization, and data engineering." />
+
+    <meta itemprop=name content="Mohammed Saqhib - Data Professional">
+    <meta itemprop="description" content="Aspiring Data Science and Analytics Professional with proficiency in data analysis, data visualization, and data engineering.">
+    <meta itemprop="image" content="https://i.imgur.com/your-image.png">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Mohammed Saqhib - Data Professional">
+    <meta name="twitter:description" content="Aspiring Data Science and Analytics Professional with proficiency in data analysis, data visualization, and data engineering.">
+    <meta name="twitter:image" content="https://i.imgur.com/your-image.png">
+
+    <meta property="og:site_name" content="Mohammed Saqhib - Data Professional">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://your-domain.com">
+    <meta property="og:title" content="Mohammed Saqhib - Data Professional">
+    <meta property="og:description" content="Aspiring Data Science and Analytics Professional with proficiency in data analysis, data visualization, and data engineering.">
+    <meta property="og:image" content="https://i.imgur.com/your-image.png">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/favicon/site.webmanifest">
+    <link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#ff8908">
+    <meta name="apple-mobile-web-app-title" content="Mohammed Saqhib">
+    <meta name="application-name" content="Mohammed Saqhib">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=block" rel="stylesheet">
+</head>
+<body>
+
+    <canvas class="canvas js-canvas"></canvas>
+
+    <div class="loading js-loading">
+        <div class="loading__text js-loading-text"></div>
+        <div class="loading__progress js-loading-progress"></div>
+    </div>
+
+    <div class="threejs-journey is-hover-none js-threejs-journey">
+        <div class="message js-message">
+            <div class="boy">
+                <div class="variant is-hi">
+                    <div class="body"></div>
+                    <div class="arm js-boy-arm"></div>
+                </div>
+                <div class="variant is-yay"></div>
+                <div class="variant is-shrugging"></div>
+            </div>
+            <div class="bubble">
+                <div class="text">Hey! You seem to really enjoy my portfolio.</div>
+                <div class="tip"></div>
+            </div>
+        </div>
+        <div class="message js-message">
+            <div class="bubble">
+                <div class="text">Would you like to learn how to create cool websites like this?</div>
+                <div class="tip"></div>
+            </div>
+        </div>
+        <div class="message js-message is-answers">
+            <a href="#" class="answer is-no js-no">
+                <span class="background"></span>
+                <span class="hover"></span>
+                <span class="label">Nah, I'm good</span>
+            </a>
+            <a href="https://threejs-journey.com?c=p1" target="_blank" rel="noopener" class="answer is-yes js-yes">
+                <span class="background"></span>
+                <span class="hover"></span>
+                <span class="label">Yes, teach me!</span>
+            </a>
+        </div>
+        <div class="message js-message">
+            <div class="bubble">
+                <div class="text">Alright then.<br>Have fun and try not to break my car!</div>
+                <div class="tip"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sections js-sections">
+        <div class="sections__big-title">
+            <div class="sections__big-title__text js-big-title-text">MOHAMMED SAQHIB - DATA PROFESSIONAL</div>
+        </div>
+        <section class="section is-a-project js-section">
+            <div class="section__container">
+                <div class="section__image-container">
+                    <img class="section__image" src="./images/project-a-1.png" />
+                </div>
+                <div class="section__content">
+                    <h2 class="section__title">About Me</h2>
+                    <p class="section__description">
+                        Aspiring Data Science and Analytics Professional with proficiency in data analysis, data visualization, and data engineering. Skilled in transforming complex datasets into actionable insights through statistical analysis and machine learning techniques.
+                    </p>
+                </div>
+            </div>
+        </section>
+        <section class="section is-a-project js-section">
+            <div class="section__container">
+                <div class="section__image-container">
+                    <img class="section__image" src="./images/project-b-1.png" />
+                </div>
+                <div class="section__content">
+                    <h2 class="section__title">Skills</h2>
+                    <p class="section__description">
+                        <b>Languages:</b> Python, SQL, R, JavaScript, HTML/CSS<br>
+                        <b>Data Science:</b> Pandas, NumPy, Scikit-learn, TensorFlow, PyTorch<br>
+                        <b>Databases:</b> MySQL, PostgreSQL, MongoDB<br>
+                        <b>Cloud & Big Data:</b> AWS, Azure, Spark, Hadoop<br>
+                        <b>Visualization:</b> Tableau, Power BI, Matplotlib, Seaborn
+                    </p>
+                </div>
+            </div>
+        </section>
+        <section class="section is-a-project js-section">
+            <div class="section__container">
+                <div class="section__image-container">
+                    <img class="section__image" src="./images/project-c-1.png" />
+                </div>
+                <div class="section__content">
+                    <h2 class="section__title">Projects</h2>
+                    <p class="section__description">
+                        Showcasing a variety of projects including a Stock Prediction Dashboard, Carpooling Optimization, Facial Recognition Attendance, and a Formula 1 Data Hub.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="contact js-contact">
+        <p>Contact me at <a href="mailto:msaqhib76@gmail.com">msaqhib76@gmail.com</a></p>
+    </div>
+
+    <div class="links js-links">
+        <div class="links__container">
+            <a class="links__link" href="https://github.com/Mohammed-Saqhib" target="_blank">
+                <img class="links__icon" src="./images/github.svg" />
+                <span class="links__text">GitHub</span>
+            </a>
+            <a class="links__link" href="http://www.linkedin.com/in/mohammed-saqhib-87b8b325a" target="_blank">
+                <img class="links__icon" src="./images/linkedin.svg" />
+                <span class="links__text">LinkedIn</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="congratulations js-congratulations">
+        <div class="congratulations__text">
+            <p>Congratulations!</p>
+            <p>You've reached the end.</p>
+        </div>
+    </div>
+
+    <div class="instructions js-instructions">
+        <div class="instructions__content">
+            <div class="instructions__keys">
+                <div class="instructions__key is-w">W</div>
+                <div class="instructions__key is-a">A</div>
+                <div class="instructions__key is-s">S</div>
+                <div class="instructions__key is-d">D</div>
+            </div>
+            <div class="instructions__text">
+                Use <span class="is-touch-only">the joystick</span><span class="is-not-touch-only">W, A, S, D</span> to move
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="./index.js"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-3966601-5"></script>
+    <script>
+        window.dataLayer = window.dataLayer || []
+        function gtag(){dataLayer.push(arguments)}
+        gtag('js', new Date())
+        gtag('config', 'UA-3966601-5')
+    </script>
+
+</body>
+</html>

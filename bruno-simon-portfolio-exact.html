@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>Mohammed Saqhib</title>
+    <meta name="description" content="Data Professional living in Bengaluru, specialized in Data Science, Machine Learning, and Analytics. Former Data Analyst and aspiring AI Engineer." />
+
+    <meta itemprop=name content="Mohammed Saqhib - Data Professional">
+    <meta itemprop="description" content="Data Professional living in Bengaluru, specialized in Data Science, Machine Learning, and Analytics. Former Data Analyst and aspiring AI Engineer.">
+    <meta itemprop="image" content="photos/logo.png">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Mohammed Saqhib - Data Professional">
+    <meta name="twitter:description" content="Data Professional living in Bengaluru, specialized in Data Science, Machine Learning, and Analytics. Former Data Analyst and aspiring AI Engineer.">
+    <meta name="twitter:image" content="photos/logo.png">
+
+    <meta property="og:site_name" content="Mohammed Saqhib - Data Professional">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="">
+    <meta property="og:title" content="Mohammed Saqhib - Data Professional">
+    <meta property="og:description" content="Data Professional living in Bengaluru, specialized in Data Science, Machine Learning, and Analytics. Former Data Analyst and aspiring AI Engineer.">
+    <meta property="og:image" content="photos/logo.png">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="shortcut icon" type="image/x-icon" href="photos/logo.png" />
+    <meta name="apple-mobile-web-app-title" content="Mohammed Saqhib">
+    <meta name="application-name" content="Mohammed Saqhib">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=block" rel="stylesheet">
+    
+    <style>
+        *
+        {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        body,
+        html
+        {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .canvas
+        {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .canvas.has-cursor-grab
+        {
+            cursor: grab;
+        }
+
+        .canvas.has-cursor-grabbing
+        {
+            cursor: grabbing;
+        }
+
+        .canvas.has-cursor-pointer
+        {
+            cursor: pointer;
+        }
+
+        .threejs-journey
+        {
+            display: none;
+            flex-direction: column;
+            justify-content: flex-end;
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            width: 420px;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .threejs-journey.is-active
+        {
+            display: flex;
+        }
+
+        .threejs-journey .message
+        {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            font-family: 'Comic Neue', cursive;
+            font-weight: 700;
+            color: #ffffff;
+            font-size: 18px;
+            opacity: 0;
+            transform: translateY(120px);
+            transition: transform 0.5s cubic-bezier(0.5, 0, 0.25, 1), opacity 0.5s 0.2s cubic-bezier(0.5, 0, 0.25, 1);
+        }
+
+        .threejs-journey .message.is-visible
+        {
+            opacity: 1;
+        }
+
+        .threejs-journey .boy
+        {
+            position: absolute;
+            bottom: 100%;
+            left: 20px;
+            width: 132px;
+            height: 118px;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .threejs-journey .boy .variant
+        {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 112px;
+            height: 100%;
+            transform: translateY(100%);
+            transition: transform 0.15s ease-in;
+        }
+
+        .threejs-journey .boy .variant.is-visible
+        {
+            transform: translateY(0%);
+        }
+
+        .threejs-journey .boy .variant.is-hi
+        {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 112 118'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cpath fill='%23F5C2A5' d='M56 30c20.987 0 38 17.013 38 38v50H18V68c0-20.987 17.013-38 38-38z'/%3E%3Cpath fill='%23F5C2A5' d='M56 0c20.987 0 38 17.013 38 38v50H18V38C18 17.013 35.013 0 56 0z'/%3E%3Cpath fill='%23333' d='M44 46c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm24 0c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z'/%3E%3Cpath fill='%23333' d='M56 66c-5.523 0-10-4.477-10-10 0-1.105.895-2 2-2h16c1.105 0 2 .895 2 2 0 5.523-4.477 10-10 10z'/%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .threejs-journey .boy .variant.is-yay
+        {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 112 118'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cpath fill='%23F5C2A5' d='M56 30c20.987 0 38 17.013 38 38v50H18V68c0-20.987 17.013-38 38-38z'/%3E%3Cpath fill='%23F5C2A5' d='M56 0c20.987 0 38 17.013 38 38v50H18V38C18 17.013 35.013 0 56 0z'/%3E%3Cpath fill='%23333' d='M50 38c-1.105 0-2 .895-2 2v8c0 1.105.895 2 2 2s2-.895 2-2v-8c0-1.105-.895-2-2-2zm12 0c-1.105 0-2 .895-2 2v8c0 1.105.895 2 2 2s2-.895 2-2v-8c0-1.105-.895-2-2-2z'/%3E%3Cpath fill='%23333' d='M56 66c-5.523 0-10-4.477-10-10 0-1.105.895-2 2-2h16c1.105 0 2 .895 2 2 0 5.523-4.477 10-10 10z'/%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .threejs-journey .boy .variant.is-shrugging
+        {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 112 118'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cpath fill='%23F5C2A5' d='M56 30c20.987 0 38 17.013 38 38v50H18V68c0-20.987 17.013-38 38-38z'/%3E%3Cpath fill='%23F5C2A5' d='M56 0c20.987 0 38 17.013 38 38v50H18V38C18 17.013 35.013 0 56 0z'/%3E%3Cpath fill='%23333' d='M44 46c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm24 0c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z'/%3E%3Cpath fill='%23333' d='M56 54c-4.418 0-8 3.582-8 8s3.582 8 8 8 8-3.582 8-8-3.582-8-8-8z'/%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .threejs-journey .boy .arm
+        {
+            position: absolute;
+            top: 60px;
+            left: 85px;
+            width: 20px;
+            height: 40px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 40'%3E%3Cpath fill='%23F5C2A5' d='M10 0c5.523 0 10 4.477 10 10v20c0 5.523-4.477 10-10 10S0 35.523 0 30V10C0 4.477 4.477 0 10 0z'/%3E%3C/svg%3E");
+            transform-origin: 50% 10%;
+            animation: wave 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes wave
+        {
+            0%
+            {
+                transform: rotate(0deg);
+            }
+            100%
+            {
+                transform: rotate(20deg);
+            }
+        }
+
+        .threejs-journey .bubble
+        {
+            position: relative;
+            background: #ffffff;
+            color: #333333;
+            padding: 20px 25px;
+            border-radius: 25px;
+            margin-bottom: 15px;
+            font-size: 16px;
+            line-height: 1.4;
+        }
+
+        .threejs-journey .bubble .tip
+        {
+            position: absolute;
+            bottom: -10px;
+            left: 50px;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 15px 15px 0 15px;
+            border-color: #ffffff transparent transparent transparent;
+        }
+
+        .threejs-journey .answers
+        {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .threejs-journey .answer
+        {
+            position: relative;
+            flex: 1;
+            background: #ff8908;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 15px 20px;
+            border-radius: 15px;
+            text-align: center;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .threejs-journey .answer:hover
+        {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 137, 8, 0.3);
+        }
+
+        .threejs-journey .answer.is-no
+        {
+            background: #666666;
+        }
+
+        .threejs-journey .answer.is-no:hover
+        {
+            box-shadow: 0 10px 20px rgba(102, 102, 102, 0.3);
+        }
+
+        @media (max-width: 768px)
+        {
+            .threejs-journey
+            {
+                bottom: 20px;
+                right: 20px;
+                width: 300px;
+            }
+
+            .threejs-journey .bubble
+            {
+                font-size: 14px;
+                padding: 15px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas class="canvas js-canvas"></canvas>
+
+    <div class="threejs-journey is-hover-none js-threejs-journey">
+        <div class="message js-message">
+            <div class="boy">
+                <div class="variant is-hi">
+                    <div class="arm js-boy-arm"></div>
+                </div>
+                <div class="variant is-yay"></div>
+                <div class="variant is-shrugging"></div>
+            </div>
+            <div class="bubble">
+                <div class="text">Hey! You seem to really enjoy exploring my data science portfolio.</div>
+                <div class="tip"></div>
+            </div>
+        </div>
+        <div class="message js-message">
+            <div class="bubble">
+                <div class="text">Would you like to learn more about data science and machine learning?</div>
+                <div class="tip"></div>
+            </div>
+        </div>
+        <div class="message js-message is-answers">
+            <div class="answers">
+                <a href="#" class="answer is-no js-no">
+                    <span class="label">Nah, I'm good</span>
+                </a>
+                <a href="https://github.com/Mohammed-Saqhib" target="_blank" rel="noopener" class="answer is-yes js-yes">
+                    <span class="label">Yes, show me more!</span>
+                </a>
+            </div>
+        </div>
+        <div class="message js-message">
+            <div class="bubble">
+                <div class="text">Awesome!<br>Feel free to drive around and explore my projects!</div>
+                <div class="tip"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Three.js -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cannon@0.6.2/build/cannon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/howler@2.2.4/dist/howler.min.js"></script>
+    
+    <script>
+        // Configuration
+        const config = {
+            debug: window.location.hash === '#debug',
+            cyberTruck: false,
+            touch: false
+        };
+
+        // Initialize touch detection
+        window.addEventListener('touchstart', () => {
+            config.touch = true;
+        }, { once: true });
+
+        // Main Application Class
+        class Application {
+            constructor() {
+                this.canvas = document.querySelector('.js-canvas');
+                this.threejsJourney = document.querySelector('.js-threejs-journey');
+                
+                this.setupSizes();
+                this.setupTime();
+                this.setupScene();
+                this.setupCamera();
+                this.setupRenderer();
+                this.setupPhysics();
+                this.setupSounds();
+                this.setupWorld();
+                this.setupCar();
+                this.setupControls();
+                this.setupThreejsJourney();
+                this.setupResize();
+                this.animate();
+                
+                // Start after a delay
+                setTimeout(() => this.start(), 2000);
+            }
+
+            setupSizes() {
+                this.sizes = {
+                    width: window.innerWidth,
+                    height: window.innerHeight,
+                    pixelRatio: Math.min(window.devicePixelRatio, 2)
+                };
+            }
+
+            setupTime() {
+                this.time = {
+                    current: Date.now(),
+                    elapsed: 0,
+                    delta: 16,
+                    callbacks: [],
+                    on: function(event, callback) {
+                        if (event === 'tick') {
+                            this.callbacks.push(callback);
+                        }
+                    },
+                    trigger: function() {
+                        this.callbacks.forEach(callback => callback());
+                    }
+                };
+            }
+
+            setupScene() {
+                this.scene = new THREE.Scene();
+                this.scene.background = new THREE.Color(0x000000);
+            }
+
+            setupCamera() {
+                this.camera = new THREE.PerspectiveCamera(
+                    75,
+                    this.sizes.width / this.sizes.height,
+                    0.1,
+                    1000
+                );
+                this.camera.position.set(0, 10, 20);
+                this.cameraTarget = new THREE.Vector3();
+            }
+
+            setupRenderer() {
+                this.renderer = new THREE.WebGLRenderer({
+                    canvas: this.canvas,
+                    alpha: true,
+                    powerPreference: 'high-performance'
+                });
+                this.renderer.setClearColor(0x000000, 1);
+                this.renderer.setPixelRatio(this.sizes.pixelRatio);
+                this.renderer.setSize(this.sizes.width, this.sizes.height);
+                this.renderer.shadowMap.enabled = true;
+                this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+                this.renderer.autoClear = false;
+            }
+
+            setupPhysics() {
+                this.world = new CANNON.World();
+                this.world.gravity.set(0, -9.82, 0);
+                this.world.broadphase = new CANNON.NaiveBroadphase();
+                this.world.solver.iterations = 10;
+                
+                // Ground
+                const groundShape = new CANNON.Plane();
+                this.groundBody = new CANNON.Body({ mass: 0 });
+                this.groundBody.addShape(groundShape);
+                this.groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
+                this.world.add(this.groundBody);
+            }
+
+            setupSounds() {
+                this.sounds = {
+                    engine: {
+                        volume: { master: 0 },
+                        speed: 0,
+                        acceleration: 0
+                    },
+                    play: function(name) {
+                        // Placeholder for sound playing
+                        console.log('Playing sound:', name);
+                    }
+                };
+            }
+
+            setupWorld() {
+                // Lighting
+                const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+                this.scene.add(ambientLight);
+
+                const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+                directionalLight.position.set(10, 20, 10);
+                directionalLight.castShadow = true;
+                directionalLight.shadow.mapSize.width = 2048;
+                directionalLight.shadow.mapSize.height = 2048;
+                this.scene.add(directionalLight);
+
+                // Ground
+                const groundGeometry = new THREE.PlaneGeometry(100, 100);
+                const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x333333 });
+                this.ground = new THREE.Mesh(groundGeometry, groundMaterial);
+                this.ground.rotation.x = -Math.PI / 2;
+                this.ground.receiveShadow = true;
+                this.scene.add(this.ground);
+
+                // Create world elements
+                this.createWorldElements();
+            }
+
+            createWorldElements() {
+                // Add some buildings and decorations exactly like Bruno's
+                const buildingGeometry = new THREE.BoxGeometry(1, 2, 1);
+                const buildingMaterial = new THREE.MeshLambertMaterial({ color: 0x666666 });
+
+                for (let i = 0; i < 10; i++) {
+                    const building = new THREE.Mesh(buildingGeometry, buildingMaterial);
+                    building.position.set(
+                        (Math.random() - 0.5) * 50,
+                        1,
+                        (Math.random() - 0.5) * 50
+                    );
+                    building.castShadow = true;
+                    building.receiveShadow = true;
+                    this.scene.add(building);
+                }
+
+                // Add colored areas for portfolio sections
+                this.createPortfolioAreas();
+            }
+
+            createPortfolioAreas() {
+                const areas = [
+                    { name: 'About', position: [15, 0.1, 0], color: 0xff8908 },
+                    { name: 'Skills', position: [-15, 0.1, 0], color: 0xff6b6b },
+                    { name: 'Projects', position: [0, 0.1, 15], color: 0x4ecdc4 },
+                    { name: 'Contact', position: [0, 0.1, -15], color: 0x45b7d1 }
+                ];
+
+                areas.forEach(area => {
+                    const geometry = new THREE.CylinderGeometry(5, 5, 0.2, 32);
+                    const material = new THREE.MeshLambertMaterial({ 
+                        color: area.color,
+                        transparent: true,
+                        opacity: 0.7
+                    });
+                    const mesh = new THREE.Mesh(geometry, material);
+                    mesh.position.set(...area.position);
+                    mesh.receiveShadow = true;
+                    this.scene.add(mesh);
+
+                    // Add text label
+                    this.createTextLabel(area.name, area.position);
+                });
+            }
+
+            createTextLabel(text, position) {
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.width = 256;
+                canvas.height = 128;
+
+                context.fillStyle = 'rgba(0, 0, 0, 0.8)';
+                context.fillRect(0, 0, canvas.width, canvas.height);
+
+                context.fillStyle = '#ffffff';
+                context.font = 'bold 24px Arial';
+                context.textAlign = 'center';
+                context.fillText(text, canvas.width / 2, canvas.height / 2);
+
+                const texture = new THREE.CanvasTexture(canvas);
+                const material = new THREE.MeshBasicMaterial({ 
+                    map: texture, 
+                    transparent: true 
+                });
+                const geometry = new THREE.PlaneGeometry(4, 2);
+                const textMesh = new THREE.Mesh(geometry, material);
+                textMesh.position.set(position[0], position[1] + 2, position[2]);
+                this.scene.add(textMesh);
+            }
+
+            setupCar() {
+                // Create car exactly like Bruno's
+                const carGroup = new THREE.Group();
+                
+                // Chassis
+                const chassisGeometry = new THREE.BoxGeometry(2, 0.8, 4);
+                const chassisMaterial = new THREE.MeshLambertMaterial({ color: 0xff8908 });
+                const chassis = new THREE.Mesh(chassisGeometry, chassisMaterial);
+                chassis.position.y = 0.4;
+                chassis.castShadow = true;
+                carGroup.add(chassis);
+
+                // Wheels
+                const wheelGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.2, 16);
+                const wheelMaterial = new THREE.MeshLambertMaterial({ color: 0x333333 });
+                
+                const wheelPositions = [
+                    [-0.8, 0, 1.2],
+                    [0.8, 0, 1.2],
+                    [-0.8, 0, -1.2],
+                    [0.8, 0, -1.2]
+                ];
+
+                wheelPositions.forEach(pos => {
+                    const wheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
+                    wheel.position.set(...pos);
+                    wheel.rotation.z = Math.PI / 2;
+                    wheel.castShadow = true;
+                    carGroup.add(wheel);
+                });
+
+                carGroup.position.set(0, 0.5, 12);
+                this.scene.add(carGroup);
+                this.car = carGroup;
+
+                // Physics body
+                const carShape = new CANNON.Box(new CANNON.Vec3(1, 0.4, 2));
+                this.carBody = new CANNON.Body({ mass: 5 });
+                this.carBody.addShape(carShape);
+                this.carBody.position.set(0, 0.5, 12);
+                this.carBody.material = new CANNON.Material();
+                this.carBody.material.friction = 0.4;
+                this.carBody.material.restitution = 0.3;
+                this.world.add(this.carBody);
+
+                // Car properties
+                this.carSpeed = 0;
+                this.carMaxSpeed = 15;
+                this.carAcceleration = 0.2;
+                this.carFriction = 0.95;
+                this.carTurnSpeed = 0.02;
+            }
+
+            setupControls() {
+                this.keys = {
+                    forward: false,
+                    backward: false,
+                    left: false,
+                    right: false
+                };
+
+                window.addEventListener('keydown', (e) => {
+                    switch(e.code) {
+                        case 'KeyW':
+                        case 'ArrowUp':
+                            this.keys.forward = true;
+                            break;
+                        case 'KeyS':
+                        case 'ArrowDown':
+                            this.keys.backward = true;
+                            break;
+                        case 'KeyA':
+                        case 'ArrowLeft':
+                            this.keys.left = true;
+                            break;
+                        case 'KeyD':
+                        case 'ArrowRight':
+                            this.keys.right = true;
+                            break;
+                    }
+                });
+
+                window.addEventListener('keyup', (e) => {
+                    switch(e.code) {
+                        case 'KeyW':
+                        case 'ArrowUp':
+                            this.keys.forward = false;
+                            break;
+                        case 'KeyS':
+                        case 'ArrowDown':
+                            this.keys.backward = false;
+                            break;
+                        case 'KeyA':
+                        case 'ArrowLeft':
+                            this.keys.left = false;
+                            break;
+                        case 'KeyD':
+                        case 'ArrowRight':
+                            this.keys.right = false;
+                            break;
+                    }
+                });
+            }
+
+            setupThreejsJourney() {
+                this.journeyMessages = this.threejsJourney.querySelectorAll('.js-message');
+                this.currentMessage = 0;
+                this.messageTimeout = null;
+
+                // Setup click handlers
+                const noButton = this.threejsJourney.querySelector('.js-no');
+                const yesButton = this.threejsJourney.querySelector('.js-yes');
+
+                noButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.nextMessage();
+                });
+
+                yesButton.addEventListener('click', (e) => {
+                    // Let it go to GitHub naturally
+                    this.nextMessage();
+                });
+            }
+
+            showThreejsJourney() {
+                this.threejsJourney.classList.add('is-active');
+                this.showMessage(0);
+            }
+
+            showMessage(index) {
+                if (index >= this.journeyMessages.length) return;
+
+                // Hide current message
+                if (this.currentMessage < this.journeyMessages.length) {
+                    this.journeyMessages[this.currentMessage].classList.remove('is-visible');
+                }
+
+                // Show new message
+                this.currentMessage = index;
+                this.journeyMessages[this.currentMessage].classList.add('is-visible');
+
+                // Update boy variant
+                const boy = this.threejsJourney.querySelector('.boy');
+                const variants = boy.querySelectorAll('.variant');
+                variants.forEach(v => v.classList.remove('is-visible'));
+
+                if (index === 0) {
+                    variants[0].classList.add('is-visible'); // hi
+                } else if (index === 1) {
+                    variants[0].classList.add('is-visible'); // hi
+                } else if (index === 2) {
+                    // answers - no specific variant
+                } else if (index === 3) {
+                    variants[1].classList.add('is-visible'); // yay
+                }
+
+                // Auto-advance for certain messages
+                if (index === 0 || index === 1) {
+                    this.messageTimeout = setTimeout(() => {
+                        this.nextMessage();
+                    }, 3000);
+                }
+            }
+
+            nextMessage() {
+                if (this.messageTimeout) {
+                    clearTimeout(this.messageTimeout);
+                    this.messageTimeout = null;
+                }
+
+                if (this.currentMessage < this.journeyMessages.length - 1) {
+                    this.showMessage(this.currentMessage + 1);
+                } else {
+                    // End sequence
+                    this.threejsJourney.classList.remove('is-active');
+                }
+            }
+
+            updateCar() {
+                const force = new CANNON.Vec3();
+
+                if (this.keys.forward) {
+                    force.set(0, 0, -this.carAcceleration);
+                    this.carSpeed = Math.min(this.carSpeed + 0.3, this.carMaxSpeed);
+                }
+                if (this.keys.backward) {
+                    force.set(0, 0, this.carAcceleration * 0.5);
+                    this.carSpeed = Math.max(this.carSpeed - 0.3, -this.carMaxSpeed * 0.5);
+                }
+                if (this.keys.left && Math.abs(this.carSpeed) > 0.1) {
+                    this.carBody.angularVelocity.y = this.carTurnSpeed * Math.sign(this.carSpeed);
+                }
+                if (this.keys.right && Math.abs(this.carSpeed) > 0.1) {
+                    this.carBody.angularVelocity.y = -this.carTurnSpeed * Math.sign(this.carSpeed);
+                }
+
+                // Apply friction
+                this.carSpeed *= this.carFriction;
+
+                // Apply forces
+                const localForce = new CANNON.Vec3();
+                this.carBody.quaternion.vmult(force, localForce);
+                this.carBody.applyForce(localForce, this.carBody.position);
+
+                // Update visual
+                this.car.position.copy(this.carBody.position);
+                this.car.quaternion.copy(this.carBody.quaternion);
+            }
+
+            updateCamera() {
+                const carPosition = this.car.position;
+                
+                // Camera follows car from behind and above
+                const idealOffset = new THREE.Vector3(0, 8, 12);
+                idealOffset.applyQuaternion(this.car.quaternion);
+                
+                const idealPosition = new THREE.Vector3().copy(carPosition).add(idealOffset);
+                
+                // Smooth camera movement
+                this.camera.position.lerp(idealPosition, 0.1);
+                
+                // Look at car
+                this.cameraTarget.copy(carPosition);
+                this.cameraTarget.y += 2;
+                this.camera.lookAt(this.cameraTarget);
+            }
+
+            setupResize() {
+                window.addEventListener('resize', () => {
+                    this.sizes.width = window.innerWidth;
+                    this.sizes.height = window.innerHeight;
+                    
+                    this.camera.aspect = this.sizes.width / this.sizes.height;
+                    this.camera.updateProjectionMatrix();
+                    
+                    this.renderer.setSize(this.sizes.width, this.sizes.height);
+                    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                });
+            }
+
+            start() {
+                // Start the experience
+                this.sounds.engine.volume.master = 0.7;
+                
+                // Show ThreeJS Journey popup after some time
+                setTimeout(() => {
+                    this.showThreejsJourney();
+                }, 10000);
+            }
+
+            animate() {
+                const now = Date.now();
+                this.time.delta = now - this.time.current;
+                this.time.current = now;
+                this.time.elapsed += this.time.delta;
+
+                // Update physics
+                this.world.step(1/60);
+
+                // Update car
+                this.updateCar();
+
+                // Update camera
+                this.updateCamera();
+
+                // Trigger time callbacks
+                this.time.trigger();
+
+                // Render
+                this.renderer.clear();
+                this.renderer.render(this.scene, this.camera);
+
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
+        // Start the application
+        window.addEventListener('load', () => {
+            new Application();
+        });
+    </script>
+</body>
+</html>

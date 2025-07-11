@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mohammed Saqhib - 3D Portfolio Journey | Cosmic Highway</title>
+    <link rel="shortcut icon" type="image/x-icon" href="photos/logo.png" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            font-family: 'Arial', sans-serif;
+            cursor: none;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        /* Custom Cursor */
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #58a6ff;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.1s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .custom-cursor.hover {
+            transform: translate(-50%, -50%) scale(1.5);
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 1s ease;
+        }
+
+        .loading-text {
+            color: #58a6ff;
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            animation: pulse 2s infinite;
+        }
+
+        .loading-bar {
+            width: 300px;
+            height: 4px;
+            background: rgba(88, 166, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loading-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #58a6ff, #ff7b72);
+            border-radius: 2px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Navigation UI */
+        .navigation-ui {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+            opacity: 0;
+            animation: slideUp 1s ease 2s forwards;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(50px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        .nav-button {
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            background: rgba(10, 10, 10, 0.8);
+            border: 2px solid #58a6ff;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(88, 166, 255, 0.3), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .nav-button:hover::before {
+            left: 100%;
+        }
+
+        .nav-button:hover {
+            background: #58a6ff;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(88, 166, 255, 0.4);
+        }
+
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Info Panel */
+        .info-panel {
+            position: absolute;
+            top: 50%;
+            left: -450px;
+            transform: translateY(-50%);
+            width: 400px;
+            padding: 30px;
+            background: rgba(10, 10, 10, 0.9);
+            border: 1px solid #58a6ff;
+            border-left: 5px solid #58a6ff;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            transition: left 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 100;
+            backdrop-filter: blur(20px);
+            border-radius: 0 15px 15px 0;
+        }
+
+        .info-panel.visible {
+            left: 0;
+        }
+
+        .info-panel h2 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            color: #58a6ff;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .info-panel p {
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+
+        .info-panel .progress-indicator {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(88, 166, 255, 0.3);
+        }
+
+        .progress-dots {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(88, 166, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .progress-dot.active {
+            background: #58a6ff;
+            transform: scale(1.2);
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 40px;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            z-index: 200;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #58a6ff, #ff7b72);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(88, 166, 255, 0.2);
+            color: #58a6ff;
+        }
+
+        /* Speed and Status */
+        .status-panel {
+            position: absolute;
+            top: 100px;
+            right: 30px;
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid #58a6ff;
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(20px);
+            z-index: 100;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .status-value {
+            color: #58a6ff;
+            font-weight: 600;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navigation-ui {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-button {
+                padding: 12px 25px;
+                font-size: 14px;
+            }
+
+            .info-panel {
+                width: 90%;
+                left: -95%;
+                padding: 20px;
+            }
+
+            .info-panel.visible {
+                left: 5%;
+            }
+
+            .top-nav {
+                padding: 15px 20px;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .status-panel {
+                top: 80px;
+                right: 20px;
+                padding: 15px;
+            }
+        }
+
+        /* Particle Effects */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #58a6ff;
+            border-radius: 50%;
+            animation: float 6s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10vh) scale(1);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="custom-cursor"></div>
+    
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-text">Initializing Cosmic Highway...</div>
+        <div class="loading-bar">
+            <div class="loading-progress" id="loadingProgress"></div>
+        </div>
+    </div>
+
+    <!-- Top Navigation -->
+    <div class="top-nav">
+        <div class="logo">MOHAMMED SAQHIB | 3D JOURNEY</div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">← Back to Portfolio</a>
+            <a href="3d-portfolio.html" class="nav-link">Static 3D</a>
+            <a href="3d-portfolio-interactive.html" class="nav-link">Interactive 3D</a>
+        </div>
+    </div>
+
+    <!-- Status Panel -->
+    <div class="status-panel">
+        <div class="status-item">
+            <span>Journey Progress:</span>
+            <span class="status-value" id="journeyProgress">0%</span>
+        </div>
+        <div class="status-item">
+            <span>Current Section:</span>
+            <span class="status-value" id="currentSection">Welcome</span>
+        </div>
+        <div class="status-item">
+            <span>Speed:</span>
+            <span class="status-value" id="speed">0 km/h</span>
+        </div>
+    </div>
+
+    <!-- Navigation UI -->
+    <div class="navigation-ui">
+        <button id="prev-btn" class="nav-button">
+            <i class="fas fa-chevron-left"></i> Previous
+        </button>
+        <button id="auto-btn" class="nav-button">
+            <i class="fas fa-play"></i> Auto Tour
+        </button>
+        <button id="next-btn" class="nav-button">
+            Next <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <!-- Info Panel -->
+    <div id="info-panel" class="info-panel">
+        <h2 id="info-title">Welcome to My Cosmic Journey!</h2>
+        <p id="info-description">Embark on an interactive journey through my portfolio. Navigate through different sections of my professional world using the controls below.</p>
+        <div class="progress-indicator">
+            <div class="progress-dots" id="progressDots">
+                <div class="progress-dot active"></div>
+                <div class="progress-dot"></div>
+                <div class="progress-dot"></div>
+                <div class="progress-dot"></div>
+                <div class="progress-dot"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Particle Effects Container -->
+    <div class="particles" id="particles"></div>
+
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.165.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.165.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+        // Global variables
+        let scene, camera, renderer, clock;
+        let carModel, path, pathMesh;
+        let currentStopIndex = 0;
+        let targetT = 0;
+        let currentT = 0;
+        let isAutoTour = false;
+        let autoTourInterval;
+        let skillSpheres = [];
+        let projectCubes = [];
+        let starField = [];
+
+        // Custom cursor
+        const cursor = document.querySelector('.custom-cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        // Add hover effects
+        document.querySelectorAll('button, a, .nav-link').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+
+        // Portfolio Stops with enhanced data
+        const portfolioStops = [
+            { 
+                t: 0.0, 
+                title: "Welcome to My Universe", 
+                description: "Welcome to my interactive 3D portfolio! I'm Mohammed Saqhib, a passionate Data Professional. This cosmic journey will take you through my skills, projects, and professional story. Use the navigation buttons to explore at your own pace.",
+                section: "Welcome"
+            },
+            { 
+                t: 0.2, 
+                title: "About Me - The Journey Begins", 
+                description: "I am a dedicated Data Professional with expertise in Python, SQL, Machine Learning, and Business Intelligence. Based in Bengaluru, I'm passionate about transforming data into actionable insights and building innovative solutions.",
+                section: "About"
+            },
+            { 
+                t: 0.4, 
+                title: "Skills Galaxy - My Technical Arsenal", 
+                description: "Explore my technical skills represented as floating spheres around you. From Python and SQL to Machine Learning and Power BI, each sphere represents a technology I've mastered. These are the tools that power my data-driven solutions.",
+                section: "Skills"
+            },
+            { 
+                t: 0.7, 
+                title: "Projects Constellation - My Best Work", 
+                description: "Here you'll find my featured projects floating as interactive cubes. Each project represents hours of dedication and innovation - from stock prediction dashboards to fraud detection systems and AI-powered applications.",
+                section: "Projects"
+            },
+            { 
+                t: 1.0, 
+                title: "Contact & Connect - Let's Build Together", 
+                description: "The journey ends here, but our collaboration can begin! I'm always excited to work on new challenges and innovative projects. Let's connect and create something amazing together.",
+                section: "Contact"
+            }
+        ];
+
+        // --- Scene Setup ---
+        function initScene() {
+            scene = new THREE.Scene();
+            scene.fog = new THREE.Fog(0x0a0a0a, 50, 200);
+            
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x0a0a0a, 1);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            document.body.appendChild(renderer.domElement);
+
+            clock = new THREE.Clock();
+        }
+
+        // --- Lighting Setup ---
+        function setupLighting() {
+            // Ambient light
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.3);
+            scene.add(ambientLight);
+
+            // Main directional light
+            const dirLight = new THREE.DirectionalLight(0x58a6ff, 1.5);
+            dirLight.position.set(10, 10, 10);
+            dirLight.castShadow = true;
+            dirLight.shadow.mapSize.width = 2048;
+            dirLight.shadow.mapSize.height = 2048;
+            scene.add(dirLight);
+
+            // Point lights for atmosphere
+            const pointLight1 = new THREE.PointLight(0xff7b72, 0.8, 50);
+            pointLight1.position.set(-20, 10, -30);
+            scene.add(pointLight1);
+
+            const pointLight2 = new THREE.PointLight(0x58a6ff, 0.6, 40);
+            pointLight2.position.set(20, -5, -60);
+            scene.add(pointLight2);
+        }
+
+        // --- Create Car Model ---
+        function createCar() {
+            // Enhanced car design
+            const carGroup = new THREE.Group();
+            
+            // Main body
+            const bodyGeometry = new THREE.BoxGeometry(2, 0.8, 4);
+            const bodyMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xff4400,
+                metalness: 0.7,
+                roughness: 0.3,
+                emissive: 0x221100
+            });
+            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            body.position.y = 0.4;
+            carGroup.add(body);
+
+            // Wheels
+            const wheelGeometry = new THREE.CylinderGeometry(0.3, 0.3, 0.2, 16);
+            const wheelMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
+            
+            const wheelPositions = [
+                [-0.8, 0, 1.2], [0.8, 0, 1.2],
+                [-0.8, 0, -1.2], [0.8, 0, -1.2]
+            ];
+            
+            wheelPositions.forEach(pos => {
+                const wheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
+                wheel.position.set(...pos);
+                wheel.rotation.z = Math.PI / 2;
+                carGroup.add(wheel);
+            });
+
+            // Headlights
+            const headlightGeometry = new THREE.SphereGeometry(0.15, 16, 16);
+            const headlightMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xffffff,
+                emissive: 0x444444
+            });
+            
+            [-0.6, 0.6].forEach(x => {
+                const headlight = new THREE.Mesh(headlightGeometry, headlightMaterial);
+                headlight.position.set(x, 0.2, 2.1);
+                carGroup.add(headlight);
+            });
+
+            carModel = carGroup;
+            scene.add(carModel);
+        }
+
+        // --- Create Cosmic Highway ---
+        function createPath() {
+            const pathPoints = [
+                new THREE.Vector3(0, 0, 0),
+                new THREE.Vector3(5, 3, -25),
+                new THREE.Vector3(-10, 8, -50),
+                new THREE.Vector3(15, 2, -75),
+                new THREE.Vector3(-5, -2, -100),
+                new THREE.Vector3(0, 5, -125)
+            ];
+            
+            path = new THREE.CatmullRomCurve3(pathPoints);
+
+            // Create highway tube
+            const pathGeometry = new THREE.TubeGeometry(path, 200, 0.5, 16, false);
+            const pathMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x58a6ff,
+                transparent: true,
+                opacity: 0.4,
+                emissive: 0x002244
+            });
+            pathMesh = new THREE.Mesh(pathGeometry, pathMaterial);
+            scene.add(pathMesh);
+
+            // Add highway lines
+            const lineGeometry = new THREE.TubeGeometry(path, 200, 0.05, 8, false);
+            const lineMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+            const line1 = new THREE.Mesh(lineGeometry, lineMaterial);
+            const line2 = new THREE.Mesh(lineGeometry, lineMaterial);
+            line1.position.y += 0.6;
+            line2.position.y -= 0.6;
+            scene.add(line1, line2);
+        }
+
+        // --- Create Star Field ---
+        function createStarField() {
+            const starGeometry = new THREE.BufferGeometry();
+            const starMaterial = new THREE.PointsMaterial({ 
+                color: 0xffffff,
+                size: 2,
+                transparent: true,
+                opacity: 0.8
+            });
+
+            const starVertices = [];
+            for (let i = 0; i < 1000; i++) {
+                const x = (Math.random() - 0.5) * 400;
+                const y = (Math.random() - 0.5) * 400;
+                const z = (Math.random() - 0.5) * 400;
+                starVertices.push(x, y, z);
+            }
+
+            starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+            const stars = new THREE.Points(starGeometry, starMaterial);
+            scene.add(stars);
+            starField.push(stars);
+        }
+
+        // --- Create Skill Spheres ---
+        function createSkillSpheres() {
+            const skillsStopPosition = path.getPointAt(portfolioStops[2].t);
+            const skills = [
+                { name: 'SQL', image: 'photos/Sql.png', color: 0x336791 },
+                { name: 'Python', image: 'photos/python.svg', color: 0x3776ab },
+                { name: 'Power BI', image: 'photos/Power Bi.png', color: 0xf2c811 },
+                { name: 'Machine Learning', image: 'photos/Machine Learning.png', color: 0xff6b35 },
+                { name: 'Deep Learning', image: 'photos/Deep Learning.png', color: 0x4285f4 },
+                { name: 'Azure', image: 'photos/azure-48.png', color: 0x0078d4 },
+                { name: 'AWS', image: 'photos/aws-50.png', color: 0xff9900 },
+                { name: 'Excel', image: 'photos/excel-50.png', color: 0x217346 }
+            ];
+
+            skills.forEach((skill, i) => {
+                const sphereGeom = new THREE.SphereGeometry(1.8, 32, 32);
+                
+                const loader = new THREE.TextureLoader();
+                loader.load(skill.image, (texture) => {
+                    const sphereMat = new THREE.MeshStandardMaterial({ 
+                        map: texture,
+                        transparent: true,
+                        opacity: 0.9,
+                        emissive: skill.color,
+                        emissiveIntensity: 0.1
+                    });
+                    
+                    const sphere = new THREE.Mesh(sphereGeom, sphereMat);
+                    sphere.position.copy(skillsStopPosition);
+                    
+                    const angle = (i / skills.length) * Math.PI * 2;
+                    const radius = 12;
+                    sphere.position.x += Math.cos(angle) * radius;
+                    sphere.position.y += Math.sin(angle * 0.5) * 6;
+                    sphere.position.z += Math.sin(angle) * radius;
+                    
+                    sphere.userData = { skill: skill.name, originalY: sphere.position.y };
+                    skillSpheres.push(sphere);
+                    scene.add(sphere);
+                });
+            });
+        }
+
+        // --- Create Project Cubes ---
+        function createProjectCubes() {
+            const projectsStopPosition = path.getPointAt(portfolioStops[3].t);
+            const projects = [
+                { name: 'Stock Prediction Dashboard', color: 0x00ff88 },
+                { name: 'Fraud Detection System', color: 0xff4444 },
+                { name: 'Facial Recognition System', color: 0x4488ff },
+                { name: 'Topic Modeling App', color: 0xff8844 },
+                { name: 'Fashion E-commerce', color: 0x8844ff },
+                { name: 'Netflix Household Verify', color: 0xff4488 }
+            ];
+
+            projects.forEach((project, i) => {
+                const cubeGeom = new THREE.BoxGeometry(2.5, 2.5, 2.5);
+                const cubeMat = new THREE.MeshStandardMaterial({ 
+                    color: project.color,
+                    metalness: 0.3,
+                    roughness: 0.4,
+                    emissive: project.color,
+                    emissiveIntensity: 0.1
+                });
+                
+                const cube = new THREE.Mesh(cubeGeom, cubeMat);
+                cube.position.copy(projectsStopPosition);
+                
+                const angle = (i / projects.length) * Math.PI * 2;
+                const radius = 15;
+                cube.position.x += Math.cos(angle) * radius;
+                cube.position.y += Math.sin(i * 0.7) * 8;
+                cube.position.z += Math.sin(angle) * radius;
+                
+                cube.userData = { project: project.name };
+                projectCubes.push(cube);
+                scene.add(cube);
+            });
+        }
+
+        // --- Create Particles ---
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            
+            setInterval(() => {
+                if (Math.random() < 0.3) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                    particlesContainer.appendChild(particle);
+                    
+                    setTimeout(() => {
+                        particle.remove();
+                    }, 6000);
+                }
+            }, 200);
+        }
+
+        // --- Navigation Logic ---
+        function setupNavigation() {
+            const nextBtn = document.getElementById('next-btn');
+            const prevBtn = document.getElementById('prev-btn');
+            const autoBtn = document.getElementById('auto-btn');
+            const infoPanel = document.getElementById('info-panel');
+            const infoTitle = document.getElementById('info-title');
+            const infoDescription = document.getElementById('info-description');
+            const progressDots = document.querySelectorAll('.progress-dot');
+
+            function updateInfoPanel() {
+                infoPanel.classList.remove('visible');
+                setTimeout(() => {
+                    const stop = portfolioStops[currentStopIndex];
+                    infoTitle.textContent = stop.title;
+                    infoDescription.textContent = stop.description;
+                    
+                    // Update progress dots
+                    progressDots.forEach((dot, i) => {
+                        dot.classList.toggle('active', i === currentStopIndex);
+                    });
+                    
+                    // Update status panel
+                    document.getElementById('journeyProgress').textContent = 
+                        Math.round((currentStopIndex / (portfolioStops.length - 1)) * 100) + '%';
+                    document.getElementById('currentSection').textContent = stop.section;
+                    
+                    infoPanel.classList.add('visible');
+                }, 500);
+            }
+
+            function updateButtons() {
+                prevBtn.disabled = currentStopIndex === 0;
+                nextBtn.disabled = currentStopIndex === portfolioStops.length - 1;
+            }
+
+            nextBtn.addEventListener('click', () => {
+                if (currentStopIndex < portfolioStops.length - 1) {
+                    currentStopIndex++;
+                    targetT = portfolioStops[currentStopIndex].t;
+                    updateInfoPanel();
+                    updateButtons();
+                }
+            });
+
+            prevBtn.addEventListener('click', () => {
+                if (currentStopIndex > 0) {
+                    currentStopIndex--;
+                    targetT = portfolioStops[currentStopIndex].t;
+                    updateInfoPanel();
+                    updateButtons();
+                }
+            });
+
+            autoBtn.addEventListener('click', () => {
+                if (isAutoTour) {
+                    clearInterval(autoTourInterval);
+                    isAutoTour = false;
+                    autoBtn.innerHTML = '<i class="fas fa-play"></i> Auto Tour';
+                } else {
+                    isAutoTour = true;
+                    autoBtn.innerHTML = '<i class="fas fa-pause"></i> Stop Tour';
+                    autoTourInterval = setInterval(() => {
+                        if (currentStopIndex < portfolioStops.length - 1) {
+                            currentStopIndex++;
+                            targetT = portfolioStops[currentStopIndex].t;
+                            updateInfoPanel();
+                            updateButtons();
+                        } else {
+                            clearInterval(autoTourInterval);
+                            isAutoTour = false;
+                            autoBtn.innerHTML = '<i class="fas fa-play"></i> Auto Tour';
+                        }
+                    }, 4000);
+                }
+            });
+
+            // Initial state
+            updateInfoPanel();
+            updateButtons();
+        }
+
+        // --- Animation Loop ---
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const deltaTime = clock.getDelta();
+            const elapsedTime = clock.getElapsedTime();
+
+            // Animate car along the path
+            const lerpSpeed = 0.02;
+            currentT += (targetT - currentT) * lerpSpeed;
+            
+            if (carModel && path) {
+                const carPosition = path.getPointAt(currentT);
+                const tangent = path.getTangentAt(currentT);
+
+                carModel.position.copy(carPosition);
+                carModel.position.y += 0.5; // Lift car above path
+                carModel.lookAt(carPosition.clone().add(tangent));
+
+                // Update speed display
+                const speed = Math.abs(targetT - currentT) * 1000;
+                document.getElementById('speed').textContent = Math.round(speed) + ' km/h';
+
+                // Animate camera to follow the car with cinematic movement
+                const cameraOffset = new THREE.Vector3(
+                    Math.sin(elapsedTime * 0.2) * 3,
+                    8 + Math.sin(elapsedTime * 0.3) * 2,
+                    20
+                );
+                const cameraTargetPosition = carPosition.clone().add(cameraOffset);
+                camera.position.lerp(cameraTargetPosition, 0.05);
+                
+                const lookAtOffset = new THREE.Vector3(0, 2, -5);
+                camera.lookAt(carPosition.clone().add(lookAtOffset));
+            }
+
+            // Animate skill spheres
+            skillSpheres.forEach((sphere, i) => {
+                sphere.rotation.y += 0.01;
+                sphere.rotation.x += 0.005;
+                sphere.position.y = sphere.userData.originalY + Math.sin(elapsedTime * 2 + i) * 0.5;
+            });
+
+            // Animate project cubes
+            projectCubes.forEach((cube, i) => {
+                cube.rotation.x += 0.01;
+                cube.rotation.y += 0.01;
+                cube.rotation.z += 0.005;
+            });
+
+            // Animate star field
+            starField.forEach(stars => {
+                stars.rotation.y += 0.0005;
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        // --- Loading System ---
+        function updateLoadingProgress() {
+            let progress = 0;
+            const loadingProgress = document.getElementById('loadingProgress');
+            const loadingScreen = document.getElementById('loadingScreen');
+            
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        loadingScreen.style.opacity = '0';
+                        setTimeout(() => {
+                            loadingScreen.style.display = 'none';
+                        }, 1000);
+                    }, 500);
+                }
+                loadingProgress.style.width = progress + '%';
+            }, 200);
+        }
+
+        // --- Initialize Everything ---
+        function init() {
+            updateLoadingProgress();
+            
+            setTimeout(() => {
+                initScene();
+                setupLighting();
+                createCar();
+                createPath();
+                createStarField();
+                createSkillSpheres();
+                createProjectCubes();
+                createParticles();
+                setupNavigation();
+                animate();
+            }, 1000);
+        }
+
+        // Handle window resizing
+        window.addEventListener('resize', () => {
+            if (camera && renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        });
+
+        // Start everything
+        window.addEventListener('load', init);
+
+    </script>
+</body>
+</html>

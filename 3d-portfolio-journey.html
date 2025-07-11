@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Portfolio Journey | Mohammed Saqhib</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" type="image/x-icon" href="photos/logo.png" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            color: white;
+            overflow: hidden;
+            cursor: none;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #58a6ff;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.1s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .custom-cursor.hover {
+            transform: translate(-50%, -50%) scale(1.5);
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.8s ease;
+        }
+
+        .loading-text {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #58a6ff, #ff7b72);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .loading-bar {
+            width: 400px;
+            height: 6px;
+            background: rgba(88, 166, 255, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            border: 1px solid #58a6ff;
+        }
+
+        .loading-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #58a6ff, #ff7b72);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Navigation UI */
+        .navigation-ui {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 15px 25px;
+            border-radius: 50px;
+            border: 1px solid #58a6ff;
+        }
+
+        .nav-button {
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            background: rgba(88, 166, 255, 0.2);
+            border: 1px solid #58a6ff;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .nav-button:hover {
+            background: #58a6ff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(88, 166, 255, 0.4);
+        }
+
+        .nav-button.active {
+            background: #58a6ff;
+            box-shadow: 0 0 20px #58a6ff;
+        }
+
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Section Info Panel */
+        .section-info {
+            position: fixed;
+            top: 50%;
+            right: -500px;
+            transform: translateY(-50%);
+            width: 400px;
+            max-height: 80vh;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid #58a6ff;
+            border-radius: 20px;
+            padding: 30px;
+            transition: right 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .section-info.visible {
+            right: 30px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #58a6ff, #ff7b72);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-content {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+        }
+
+        /* Experience Cards */
+        .experience-grid {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .experience-card {
+            background: rgba(88, 166, 255, 0.1);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .experience-card:hover {
+            background: rgba(88, 166, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .experience-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #58a6ff;
+            margin-bottom: 8px;
+        }
+
+        .experience-date {
+            font-size: 0.9rem;
+            color: #ff7b72;
+            margin-bottom: 10px;
+        }
+
+        .experience-description {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        /* Project Grid */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .project-card {
+            background: rgba(88, 166, 255, 0.1);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .project-card:hover {
+            background: rgba(88, 166, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .project-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #58a6ff;
+            margin-bottom: 10px;
+        }
+
+        .project-category {
+            font-size: 0.8rem;
+            color: #ff7b72;
+            background: rgba(255, 123, 114, 0.2);
+            padding: 4px 12px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        /* Skills Grid */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .skill-item {
+            background: rgba(88, 166, 255, 0.1);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .skill-item:hover {
+            background: rgba(88, 166, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .skill-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #58a6ff;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid #58a6ff;
+            border-radius: 25px;
+            padding: 15px 25px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .portfolio-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #58a6ff, #ff7b72);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .back-btn {
+            padding: 8px 16px;
+            background: rgba(88, 166, 255, 0.2);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            border-radius: 15px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #58a6ff;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Current Section Indicator */
+        .current-section {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid #58a6ff;
+            border-radius: 15px;
+            padding: 10px 20px;
+            z-index: 100;
+            font-size: 0.9rem;
+            color: #58a6ff;
+        }
+
+        /* Travel Progress */
+        .travel-progress {
+            position: fixed;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid #58a6ff;
+            border-radius: 15px;
+            padding: 10px 20px;
+            z-index: 100;
+            font-size: 0.9rem;
+            color: white;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .section-info {
+                width: 90%;
+                right: -100%;
+            }
+            
+            .section-info.visible {
+                right: 5%;
+            }
+            
+            .navigation-ui {
+                flex-wrap: wrap;
+                padding: 10px 15px;
+            }
+            
+            .nav-button {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+        }
+
+        /* Scrollbar Styling */
+        .section-info::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .section-info::-webkit-scrollbar-track {
+            background: rgba(88, 166, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        .section-info::-webkit-scrollbar-thumb {
+            background: #58a6ff;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="custom-cursor"></div>
+    
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-text">Initializing 3D Portfolio Journey...</div>
+        <div class="loading-bar">
+            <div class="loading-progress" id="loadingProgress"></div>
+        </div>
+    </div>
+
+    <!-- Top Navigation -->
+    <div class="top-nav">
+        <div class="portfolio-title">Mohammed Saqhib | 3D Journey</div>
+        <a href="index.html" class="back-btn">← Back to Portfolio</a>
+    </div>
+
+    <!-- Current Section Indicator -->
+    <div class="current-section" id="currentSection">
+        Current: Home
+    </div>
+
+    <!-- Travel Progress -->
+    <div class="travel-progress" id="travelProgress">
+        Ready to explore!
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="navigation-ui">
+        <button id="homeBtn" class="nav-button active" data-section="home">🏠 Home</button>
+        <button id="aboutBtn" class="nav-button" data-section="about">👨‍💻 About</button>
+        <button id="skillsBtn" class="nav-button" data-section="skills">⚡ Skills</button>
+        <button id="experienceBtn" class="nav-button" data-section="experience">💼 Experience</button>
+        <button id="projectsBtn" class="nav-button" data-section="projects">🚀 Projects</button>
+        <button id="contactBtn" class="nav-button" data-section="contact">📧 Contact</button>
+    </div>
+
+    <!-- Section Information Panel -->
+    <div class="section-info" id="sectionInfo">
+        <div class="section-title" id="sectionTitle">Welcome to My Portfolio</div>
+        <div class="section-content" id="sectionContent">
+            <p>Welcome to my interactive 3D portfolio journey! Use the navigation buttons below to drive your car through different sections of my portfolio. Each section will expand to show detailed information.</p>
+            <p><strong>Instructions:</strong></p>
+            <ul>
+                <li>Click on any section button to travel there</li>
+                <li>Watch as your car smoothly navigates the 3D space</li>
+                <li>Each section will expand with detailed content</li>
+                <li>Enjoy the immersive experience!</li>
+            </ul>
+        </div>
+    </div>
+
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.165.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.165.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+
+        // Global variables
+        let scene, camera, renderer;
+        let carModel, carGroup;
+        let sectionMarkers = [];
+        let currentSection = 'home';
+        let isTransitioning = false;
+        let clock = new THREE.Clock();
+
+        // Custom cursor
+        const cursor = document.querySelector('.custom-cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        // Add hover effects
+        document.querySelectorAll('button, a, .nav-button').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+
+        // Section positions and data
+        const sections = {
+            home: {
+                position: { x: 0, y: 0, z: 0 },
+                title: "Welcome Home",
+                content: `
+                    <p>Welcome to my interactive 3D portfolio journey! I'm Mohammed Saqhib, an aspiring Data Science and Analytics Professional passionate about transforming data into actionable insights.</p>
+                    <p><strong>What you'll discover:</strong></p>
+                    <ul>
+                        <li>🎓 My educational background and journey</li>
+                        <li>💼 Professional experiences and internships</li>
+                        <li>⚡ Technical skills and expertise</li>
+                        <li>🚀 Featured projects and achievements</li>
+                        <li>📧 Ways to connect and collaborate</li>
+                    </ul>
+                    <p>Use the navigation buttons below to drive through my portfolio and explore each section!</p>
+                `
+            },
+            about: {
+                position: { x: -30, y: 0, z: 0 },
+                title: "About Me",
+                content: `
+                    <p>I am an aspiring Data Science and Analytics Professional with a strong foundation in data analysis, visualization, and engineering. My passion lies in uncovering insights from complex datasets and building intelligent solutions.</p>
+                    
+                    <h3 style="color: #58a6ff; margin-top: 20px;">Background</h3>
+                    <p>Based in Bengaluru, India, I bring together technical expertise and analytical thinking to solve real-world problems through data-driven approaches.</p>
+                    
+                    <h3 style="color: #58a6ff; margin-top: 20px;">My Toolkit</h3>
+                    <div class="skills-grid">
+                        <div class="skill-item">
+                            <div class="skill-name">Python</div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-name">SQL</div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-name">Power BI</div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-name">Machine Learning</div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-name">TensorFlow</div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-name">AWS</div>
+                        </div>
+                    </div>
+                    
+                    <h3 style="color: #58a6ff; margin-top: 20px;">What Drives Me</h3>
+                    <p>I'm passionate about leveraging data to create meaningful impact. Whether it's building predictive models, creating insightful dashboards, or developing end-to-end data solutions, I thrive on challenges that push the boundaries of what's possible with data.</p>
+                `
+            },
+            skills: {
+                position: { x: 30, y: 0, z: 0 },
+                title: "Technical Skills",
+                content: `
+                    <p>My technical expertise spans across multiple domains of data science and analytics. Here's a comprehensive overview of my skills:</p>
+                    
+                    <h3 style="color: #58a6ff; margin-top: 20px;">Programming Languages</h3>
+                    <div class="skills-grid">
+                        <div class="skill-item">
+                            <div class="skill-name">Python</div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-name">R</div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-name">SQL</div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-name">JavaScript</div>
+                        </div>
+                    </div>
+                    
+                    <h3 style="color: #58a6ff; margin-top: 20px;">Data Analysis & Visualization</h3>
+                    <div class="skills-grid">
+                        <div class="skill-item">
+                            <div class="skill-name">Pandas</div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-name">NumPy</div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-name">Power BI</div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-name">Tableau</div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-name">Matplotlib</div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-name">Seaborn</div>
+                        </div>
+                    </div>
+                    
+                    <h3 style="color: #58a6ff; margin-top: 20px;">Machine Learning & AI</h3>
+                    <div class="skills-grid">
+                        <div class="skill-item">
+                            <div class="skill-name">Scikit-learn</div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-name">TensorFlow</div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-name">Deep Learning</div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-name">NLP</div>
+                        </div>
+                    </div>
+                    
+                    <h3 style="color: #58a6ff; margin-top: 20px;">Cloud & Engineering</h3>
+                    <div class="skills-grid">
+                        <div class="skill-item">
+                            <div class="skill-name">AWS</div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-name">Azure</div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-name">Docker</div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-name">Git</div>
+                        </div>
+                    </div>
+                `
+            },
+            experience: {
+                position: { x: 0, y: 0, z: -30 },
+                title: "Professional Experience",
+                content: `
+                    <p>My professional journey includes diverse internships and roles that have shaped my expertise in data science and analytics:</p>
+                    
+                    <div class="experience-grid">
+                        <div class="experience-card">
+                            <div class="experience-title">Machine Learning Intern – Quantiota</div>
+                            <div class="experience-date">Jan 2025 - Mar 2025 | Bengaluru, India</div>
+                            <div class="experience-description">
+                                • Developed real-time data pipelines using Python and SQL<br>
+                                • Integrated ML models for market trend prediction<br>
+                                • Containerized TA-Lib & Flask application using Docker
+                            </div>
+                        </div>
+                        
+                        <div class="experience-card">
+                            <div class="experience-title">Associate Intern – COSMIC365.AI</div>
+                            <div class="experience-date">Nov - Dec 2024 | Bengaluru, India</div>
+                            <div class="experience-description">
+                                • Built interactive Power BI dashboards for business insights<br>
+                                • Applied advanced Python libraries for comprehensive data analysis<br>
+                                • Collaborated with cross-functional teams on AI projects
+                            </div>
+                        </div>
+                        
+                        <div class="experience-card">
+                            <div class="experience-title">Data Mapping Intern – Singularium Technologies</div>
+                            <div class="experience-date">Oct - Nov 2024 | Bengaluru, India</div>
+                            <div class="experience-description">
+                                • Performed complex data mapping using advanced SQL queries<br>
+                                • Developed scalable data pipelines for large datasets<br>
+                                • Optimized database performance and data integrity
+                            </div>
+                        </div>
+                        
+                        <div class="experience-card">
+                            <div class="experience-title">Data Science and AI Intern – Ioncure Tech</div>
+                            <div class="experience-date">Jun - Aug 2024 | Bengaluru, India</div>
+                            <div class="experience-description">
+                                • Built predictive models for healthcare data analysis<br>
+                                • Implemented NLP techniques for text analysis and processing<br>
+                                • Developed end-to-end machine learning workflows
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3 style="color: #58a6ff; margin-top: 20px;">Key Achievements</h3>
+                    <ul>
+                        <li>Successfully delivered 15+ data science projects across multiple domains</li>
+                        <li>Improved model accuracy by 25% through advanced feature engineering</li>
+                        <li>Reduced data processing time by 40% through optimized pipelines</li>
+                        <li>Mentored junior interns in machine learning best practices</li>
+                    </ul>
+                `
+            },
+            projects: {
+                position: { x: 0, y: 0, z: 30 },
+                title: "Featured Projects",
+                content: `
+                    <p>Here are some of my most impactful projects that showcase my skills in data science, machine learning, and web development:</p>
+                    
+                    <div class="projects-grid">
+                        <div class="project-card" onclick="window.open('https://github.com/Mohammed-Saqhib/Advanced-Stock-Prediction-Analysis-Dashboard', '_blank')">
+                            <div class="project-category">Data Science</div>
+                            <div class="project-title">Stock Prediction Dashboard</div>
+                            <p>Advanced analytics dashboard for stock market prediction using machine learning algorithms and real-time data processing.</p>
+                        </div>
+                        
+                        <div class="project-card" onclick="window.open('https://github.com/Mohammed-Saqhib/fraud-detection-system', '_blank')">
+                            <div class="project-category">Machine Learning</div>
+                            <div class="project-title">Fraud Detection System</div>
+                            <p>Intelligent fraud detection system using ensemble methods and anomaly detection techniques.</p>
+                        </div>
+                        
+                        <div class="project-card" onclick="window.open('https://github.com/Mohammed-Saqhib/Facial-Recognition-Attendance-Management-System', '_blank')">
+                            <div class="project-category">Computer Vision</div>
+                            <div class="project-title">Facial Recognition Attendance</div>
+                            <p>AI-powered attendance management system using facial recognition and deep learning models.</p>
+                        </div>
+                        
+                        <div class="project-card" onclick="window.open('https://github.com/Mohammed-Saqhib/Topic-Modeling-and-Labeling-App-powered-by-Whisper-and-Streamlit', '_blank')">
+                            <div class="project-category">NLP</div>
+                            <div class="project-title">Topic Modeling App</div>
+                            <p>Advanced topic modeling and labeling application powered by Whisper AI and Streamlit.</p>
+                        </div>
+                        
+                        <div class="project-card" onclick="window.open('https://github.com/Mohammed-Saqhib/Formula1-DataHub', '_blank')">
+                            <div class="project-category">Data Analytics</div>
+                            <div class="project-title">Formula1 DataHub</div>
+                            <p>Comprehensive Formula 1 data analysis platform with interactive visualizations and insights.</p>
+                        </div>
+                        
+                        <div class="project-card" onclick="window.open('https://github.com/Mohammed-Saqhib/kritya-fashion', '_blank')">
+                            <div class="project-category">Web Development</div>
+                            <div class="project-title">Kritya Fashion E-commerce</div>
+                            <p>Full-stack e-commerce platform with modern UI/UX and advanced functionality.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 20px; text-align: center;">
+                        <a href="https://github.com/Mohammed-Saqhib?tab=repositories" target="_blank" style="color: #58a6ff; text-decoration: none; font-weight: 600;">
+                            View All Projects on GitHub →
+                        </a>
+                    </div>
+                `
+            },
+            contact: {
+                position: { x: 0, y: 0, z: -50 },
+                title: "Get In Touch",
+                content: `
+                    <p>I'm always excited to connect with fellow data enthusiasts, potential collaborators, and organizations looking for data-driven solutions. Let's create something amazing together!</p>
+                    
+                    <h3 style="color: #58a6ff; margin-top: 20px;">Contact Information</h3>
+                    <div style="background: rgba(88, 166, 255, 0.1); border: 1px solid rgba(88, 166, 255, 0.3); border-radius: 15px; padding: 20px; margin: 15px 0;">
+                        <p><strong>📧 Email:</strong> <a href="mailto:msaqhib76@gmail.com" style="color: #58a6ff;">msaqhib76@gmail.com</a></p>
+                        <p><strong>📱 Phone:</strong> +91 6239121164</p>
+                        <p><strong>📍 Location:</strong> Bengaluru, Karnataka, India</p>
+                        <p><strong>💼 LinkedIn:</strong> <a href="http://www.linkedin.com/in/mohammed-saqhib-87b8b325a" target="_blank" style="color: #58a6ff;">Connect with me</a></p>
+                        <p><strong>🐙 GitHub:</strong> <a href="https://github.com/Mohammed-Saqhib" target="_blank" style="color: #58a6ff;">View my repositories</a></p>
+                    </div>
+                    
+                    <h3 style="color: #58a6ff; margin-top: 20px;">What I'm Looking For</h3>
+                    <ul>
+                        <li>🚀 <strong>Full-time opportunities</strong> in Data Science and Analytics</li>
+                        <li>🤝 <strong>Collaboration projects</strong> in Machine Learning and AI</li>
+                        <li>📊 <strong>Freelance projects</strong> in data visualization and analysis</li>
+                        <li>🎓 <strong>Mentorship opportunities</strong> to share knowledge and learn</li>
+                        <li>💡 <strong>Open source contributions</strong> in data science tools</li>
+                    </ul>
+                    
+                    <h3 style="color: #58a6ff; margin-top: 20px;">Let's Connect!</h3>
+                    <p>Whether you have a project in mind, want to discuss data science trends, or simply want to network, I'd love to hear from you. I'm passionate about using data to solve real-world problems and am always open to new challenges and opportunities.</p>
+                    
+                    <div style="text-align: center; margin-top: 20px;">
+                        <a href="mailto:msaqhib76@gmail.com" style="background: #58a6ff; color: white; padding: 12px 24px; border-radius: 25px; text-decoration: none; font-weight: 600; display: inline-block; margin: 5px;">
+                            📧 Send Email
+                        </a>
+                        <a href="https://drive.google.com/file/d/1ujEdcYrkkLtR4aA804RoGJ21MuiRIBww/view?usp=sharing" target="_blank" style="background: #ff7b72; color: white; padding: 12px 24px; border-radius: 25px; text-decoration: none; font-weight: 600; display: inline-block; margin: 5px;">
+                            📄 Download Resume
+                        </a>
+                    </div>
+                `
+            }
+        };
+
+        // --- Scene Setup ---
+        function initScene() {
+            // Create scene
+            scene = new THREE.Scene();
+            scene.fog = new THREE.Fog(0x090a0f, 10, 200);
+
+            // Camera setup
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 15, 20);
+
+            // Renderer setup
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.setClearColor(0x090a0f, 1);
+            document.body.appendChild(renderer.domElement);
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(50, 100, 50);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            directionalLight.shadow.camera.near = 0.1;
+            directionalLight.shadow.camera.far = 200;
+            directionalLight.shadow.camera.left = -100;
+            directionalLight.shadow.camera.right = 100;
+            directionalLight.shadow.camera.top = 100;
+            directionalLight.shadow.camera.bottom = -100;
+            scene.add(directionalLight);
+
+            // Point lights for atmosphere
+            const colors = [0x58a6ff, 0xff7b72, 0x7c3aed, 0x10b981];
+            colors.forEach((color, i) => {
+                const light = new THREE.PointLight(color, 0.8, 50);
+                light.position.set(
+                    Math.cos((i / colors.length) * Math.PI * 2) * 40,
+                    10 + Math.sin(i) * 5,
+                    Math.sin((i / colors.length) * Math.PI * 2) * 40
+                );
+                scene.add(light);
+            });
+        }
+
+        // --- Ground Creation ---
+        function createGround() {
+            const groundGeometry = new THREE.PlaneGeometry(200, 200, 50, 50);
+            const groundMaterial = new THREE.MeshLambertMaterial({ 
+                color: 0x1a1a2e,
+                transparent: true,
+                opacity: 0.8
+            });
+            
+            // Add some vertex displacement for terrain effect
+            const vertices = groundGeometry.attributes.position.array;
+            for (let i = 0; i < vertices.length; i += 3) {
+                vertices[i + 2] = Math.sin(vertices[i] * 0.05) * Math.cos(vertices[i + 1] * 0.05) * 2;
+            }
+            groundGeometry.attributes.position.needsUpdate = true;
+            groundGeometry.computeVertexNormals();
+            
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.receiveShadow = true;
+            scene.add(ground);
+
+            // Add a road/path
+            const pathGeometry = new THREE.PlaneGeometry(150, 8);
+            const pathMaterial = new THREE.MeshLambertMaterial({ 
+                color: 0x2a2a3e,
+                transparent: true,
+                opacity: 0.9
+            });
+            const path = new THREE.Mesh(pathGeometry, pathMaterial);
+            path.rotation.x = -Math.PI / 2;
+            path.position.y = 0.1;
+            scene.add(path);
+        }
+
+        // --- Car Creation ---
+        function createCar() {
+            carGroup = new THREE.Group();
+
+            // Car body
+            const bodyGeometry = new THREE.BoxGeometry(4, 1.5, 2);
+            const bodyMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xff4444,
+                metalness: 0.8,
+                roughness: 0.2
+            });
+            const carBody = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            carBody.position.y = 1;
+            carBody.castShadow = true;
+            carGroup.add(carBody);
+
+            // Car roof
+            const roofGeometry = new THREE.BoxGeometry(2.5, 1, 1.8);
+            const roofMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x333333,
+                metalness: 0.9,
+                roughness: 0.1
+            });
+            const carRoof = new THREE.Mesh(roofGeometry, roofMaterial);
+            carRoof.position.y = 2;
+            carRoof.castShadow = true;
+            carGroup.add(carRoof);
+
+            // Wheels
+            const wheelGeometry = new THREE.CylinderGeometry(0.5, 0.5, 0.3, 16);
+            const wheelMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x222222,
+                metalness: 0.1,
+                roughness: 0.8
+            });
+
+            const wheelPositions = [
+                { x: -1.5, z: -0.8 },
+                { x: 1.5, z: -0.8 },
+                { x: -1.5, z: 0.8 },
+                { x: 1.5, z: 0.8 }
+            ];
+
+            wheelPositions.forEach(pos => {
+                const wheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
+                wheel.position.set(pos.x, 0.5, pos.z);
+                wheel.rotation.z = Math.PI / 2;
+                wheel.castShadow = true;
+                carGroup.add(wheel);
+            });
+
+            // Headlights
+            const lightGeometry = new THREE.SphereGeometry(0.2, 16, 16);
+            const lightMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xffffff,
+                emissive: 0xffffaa,
+                emissiveIntensity: 0.5
+            });
+
+            const leftLight = new THREE.Mesh(lightGeometry, lightMaterial);
+            leftLight.position.set(-1.8, 1.2, -0.6);
+            carGroup.add(leftLight);
+
+            const rightLight = new THREE.Mesh(lightGeometry, lightMaterial);
+            rightLight.position.set(-1.8, 1.2, 0.6);
+            carGroup.add(rightLight);
+
+            carGroup.position.copy(sections.home.position);
+            carGroup.position.y = 1;
+            scene.add(carGroup);
+            
+            carModel = carGroup;
+        }
+
+        // --- Section Markers ---
+        function createSectionMarkers() {
+            Object.keys(sections).forEach((sectionKey, index) => {
+                if (sectionKey === 'home') return;
+
+                const section = sections[sectionKey];
+                
+                // Create marker pillar
+                const pillarGeometry = new THREE.CylinderGeometry(1, 1.5, 8, 8);
+                const pillarMaterial = new THREE.MeshStandardMaterial({
+                    color: 0x58a6ff,
+                    metalness: 0.7,
+                    roughness: 0.3,
+                    emissive: 0x001122,
+                    emissiveIntensity: 0.2
+                });
+                const pillar = new THREE.Mesh(pillarGeometry, pillarMaterial);
+                pillar.position.set(section.position.x, 4, section.position.z);
+                pillar.castShadow = true;
+                scene.add(pillar);
+
+                // Create floating icon
+                const iconGeometry = new THREE.SphereGeometry(0.8, 16, 16);
+                const iconMaterial = new THREE.MeshStandardMaterial({
+                    color: 0xff7b72,
+                    metalness: 0.9,
+                    roughness: 0.1,
+                    emissive: 0x220011,
+                    emissiveIntensity: 0.3
+                });
+                const icon = new THREE.Mesh(iconGeometry, iconMaterial);
+                icon.position.set(section.position.x, 9, section.position.z);
+                scene.add(icon);
+
+                // Add glow effect
+                const glowGeometry = new THREE.SphereGeometry(1.2, 16, 16);
+                const glowMaterial = new THREE.MeshBasicMaterial({
+                    color: 0x58a6ff,
+                    transparent: true,
+                    opacity: 0.3
+                });
+                const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+                glow.position.copy(icon.position);
+                scene.add(glow);
+
+                sectionMarkers.push({ pillar, icon, glow, section: sectionKey });
+            });
+        }
+
+        // --- Stars Background ---
+        function createStarField() {
+            const starsGeometry = new THREE.BufferGeometry();
+            const starsMaterial = new THREE.PointsMaterial({
+                color: 0xffffff,
+                size: 2,
+                transparent: true,
+                opacity: 0.8
+            });
+
+            const starsVertices = [];
+            for (let i = 0; i < 1000; i++) {
+                const x = (Math.random() - 0.5) * 400;
+                const y = Math.random() * 200 + 50;
+                const z = (Math.random() - 0.5) * 400;
+                starsVertices.push(x, y, z);
+            }
+
+            starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starsVertices, 3));
+            const stars = new THREE.Points(starsGeometry, starsMaterial);
+            scene.add(stars);
+        }
+
+        // --- Navigation Functions ---
+        function navigateToSection(targetSection) {
+            if (isTransitioning || targetSection === currentSection) return;
+
+            isTransitioning = true;
+            const target = sections[targetSection];
+            
+            // Update UI
+            document.querySelectorAll('.nav-button').forEach(btn => {
+                btn.classList.remove('active');
+                btn.disabled = true;
+            });
+            
+            document.querySelector(`[data-section="${targetSection}"]`).classList.add('active');
+            document.getElementById('currentSection').textContent = `Current: ${target.title}`;
+            document.getElementById('travelProgress').textContent = `Traveling to ${target.title}...`;
+
+            // Hide current section info
+            document.getElementById('sectionInfo').classList.remove('visible');
+
+            // Animate car movement
+            const startPos = carModel.position.clone();
+            const endPos = new THREE.Vector3(target.position.x, 1, target.position.z);
+            const duration = 3000; // 3 seconds
+            const startTime = Date.now();
+
+            function animateCar() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Smooth easing function
+                const easeProgress = 1 - Math.pow(1 - progress, 3);
+                
+                // Interpolate position
+                carModel.position.lerpVectors(startPos, endPos, easeProgress);
+                
+                // Add bouncing motion
+                carModel.position.y = 1 + Math.sin(elapsed * 0.01) * 0.2;
+                
+                // Rotate car towards direction
+                const direction = new THREE.Vector3().subVectors(endPos, startPos).normalize();
+                carModel.lookAt(carModel.position.clone().add(direction));
+
+                // Update camera to follow car smoothly
+                const cameraTarget = carModel.position.clone();
+                cameraTarget.add(new THREE.Vector3(10, 15, 10));
+                camera.position.lerp(cameraTarget, 0.02);
+                camera.lookAt(carModel.position);
+
+                if (progress < 1) {
+                    requestAnimationFrame(animateCar);
+                } else {
+                    // Animation complete
+                    currentSection = targetSection;
+                    isTransitioning = false;
+                    
+                    // Re-enable buttons
+                    document.querySelectorAll('.nav-button').forEach(btn => {
+                        btn.disabled = false;
+                    });
+                    
+                    // Show section info
+                    setTimeout(() => {
+                        showSectionInfo(target);
+                        document.getElementById('travelProgress').textContent = `Arrived at ${target.title}!`;
+                    }, 500);
+                }
+            }
+            
+            animateCar();
+        }
+
+        function showSectionInfo(section) {
+            const infoPanel = document.getElementById('sectionInfo');
+            const titleElement = document.getElementById('sectionTitle');
+            const contentElement = document.getElementById('sectionContent');
+            
+            titleElement.textContent = section.title;
+            contentElement.innerHTML = section.content;
+            
+            setTimeout(() => {
+                infoPanel.classList.add('visible');
+            }, 100);
+        }
+
+        // --- Event Listeners ---
+        function setupEventListeners() {
+            // Navigation buttons
+            document.querySelectorAll('.nav-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetSection = button.getAttribute('data-section');
+                    navigateToSection(targetSection);
+                });
+            });
+
+            // Window resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+
+        // --- Animation Loop ---
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const deltaTime = clock.getDelta();
+            const elapsedTime = clock.getElapsedTime();
+
+            // Animate section markers
+            sectionMarkers.forEach((marker, index) => {
+                marker.icon.rotation.y += deltaTime * 2;
+                marker.icon.position.y = 9 + Math.sin(elapsedTime * 2 + index) * 0.5;
+                marker.glow.rotation.y -= deltaTime;
+                marker.glow.scale.setScalar(1 + Math.sin(elapsedTime * 3 + index) * 0.1);
+            });
+
+            // Car wheel rotation
+            if (carModel && !isTransitioning) {
+                carModel.children.forEach((child, index) => {
+                    if (index >= 2 && index <= 5) { // Wheels
+                        child.rotation.x += deltaTime * 0.5;
+                    }
+                });
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // --- Loading Functions ---
+        function updateLoadingProgress() {
+            const progressBar = document.getElementById('loadingProgress');
+            let progress = 0;
+            
+            const interval = setInterval(() => {
+                progress += Math.random() * 30;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    setTimeout(hideLoadingScreen, 500);
+                }
+                progressBar.style.width = progress + '%';
+            }, 200);
+        }
+
+        function hideLoadingScreen() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            loadingScreen.style.opacity = '0';
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+                // Show welcome section info
+                showSectionInfo(sections.home);
+            }, 500);
+        }
+
+        // --- Initialize Everything ---
+        function init() {
+            initScene();
+            createGround();
+            createCar();
+            createSectionMarkers();
+            createStarField();
+            setupEventListeners();
+            animate();
+            updateLoadingProgress();
+        }
+
+        // Start the experience
+        window.addEventListener('load', init);
+
+    </script>
+</body>
+</html>

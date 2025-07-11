@@ -192,6 +192,30 @@ img {
     width: 100%;
 }
 
+/* Special styling for 3D Journey link */
+.nav-link.special-nav {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 600;
+    position: relative;
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+.nav-link.special-nav::after {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+}
+
+@keyframes glow {
+    from { 
+        text-shadow: 0 0 5px rgba(88, 166, 255, 0.3);
+    }
+    to { 
+        text-shadow: 0 0 15px rgba(88, 166, 255, 0.6), 0 0 25px rgba(255, 123, 114, 0.3);
+    }
+}
+
 .nav-actions {
     display: flex;
     align-items: center;

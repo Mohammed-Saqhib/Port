@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mohammed Saqhib | Fast 3D Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" type="image/x-icon" href="photos/logo.png" />
+    <style>
+        :root {
+            --primary: #ff6b6b;
+            --secondary: #4ecdc4;
+            --accent: #45b7d1;
+            --background: #1a1a2e;
+            --surface: #16213e;
+            --text: #ffffff;
+            --text-secondary: #b8b8b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--text);
+            overflow: hidden;
+            user-select: none;
+        }
+
+        canvas {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* Loading Screen - Simplified */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--background);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-title {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: pulse 2s infinite;
+        }
+
+        .loading-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .loading-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loading-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.3s ease;
+            animation: loadingMove 2s ease-in-out;
+        }
+
+        /* UI Overlay - Simplified */
+        .ui-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        /* Header */
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, rgba(26, 26, 46, 0.8), transparent);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* Controls */
+        .controls-panel {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            background: rgba(22, 33, 62, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            min-width: 200px;
+        }
+
+        .controls-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .control-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+        }
+
+        .control-key {
+            background: var(--primary);
+            color: var(--background);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            margin-right: 10px;
+            min-width: 20px;
+            text-align: center;
+            font-size: 0.7rem;
+        }
+
+        /* Speed Indicator */
+        .speed-indicator {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(22, 33, 62, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .speed-value {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .speed-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        /* Section Panel */
+        .section-panel {
+            position: absolute;
+            top: 50%;
+            right: 30px;
+            transform: translateY(-50%) translateX(400px);
+            background: rgba(22, 33, 62, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 25px;
+            max-width: 350px;
+            max-height: 60vh;
+            overflow-y: auto;
+            transition: all 0.4s ease;
+        }
+
+        .section-panel.visible {
+            transform: translateY(-50%) translateX(0);
+        }
+
+        .section-panel h2 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+
+        .section-panel p {
+            line-height: 1.5;
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Interaction Hint */
+        .interaction-hint {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .interaction-hint.visible {
+            opacity: 1;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes loadingMove {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .controls-panel,
+            .speed-indicator,
+            .section-panel {
+                bottom: 10px;
+                right: 10px;
+                left: 10px;
+                position: relative;
+                margin: 10px;
+                min-width: auto;
+            }
+
+            .header {
+                padding: 15px 20px;
+            }
+
+            .nav-links {
+                gap: 15px;
+            }
+
+            .loading-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-title">MOHAMMED SAQHIB</div>
+        <div class="loading-subtitle">Fast 3D Portfolio Experience</div>
+        <div class="loading-bar">
+            <div class="loading-progress" id="loadingProgress"></div>
+        </div>
+    </div>
+
+    <!-- UI Overlay -->
+    <div class="ui-overlay">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">MS.DEV</div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#about" onclick="focusOnSection('about')">About</a></li>
+                    <li><a href="#skills" onclick="focusOnSection('skills')">Skills</a></li>
+                    <li><a href="#projects" onclick="focusOnSection('projects')">Projects</a></li>
+                    <li><a href="#contact" onclick="focusOnSection('contact')">Contact</a></li>
+                    <li><a href="index.html">← Portfolio</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Controls Panel -->
+        <div class="controls-panel">
+            <div class="controls-title">🚗 Controls</div>
+            <div class="control-item">
+                <span class="control-key">W</span>
+                <span>Forward</span>
+            </div>
+            <div class="control-item">
+                <span class="control-key">S</span>
+                <span>Brake/Reverse</span>
+            </div>
+            <div class="control-item">
+                <span class="control-key">A</span>
+                <span>Left</span>
+            </div>
+            <div class="control-item">
+                <span class="control-key">D</span>
+                <span>Right</span>
+            </div>
+            <div class="control-item">
+                <span class="control-key">R</span>
+                <span>Reset</span>
+            </div>
+        </div>
+
+        <!-- Speed Indicator -->
+        <div class="speed-indicator">
+            <div class="speed-value" id="speedValue">0</div>
+            <div class="speed-label">KM/H</div>
+        </div>
+
+        <!-- Section Panel -->
+        <div class="section-panel" id="sectionPanel">
+            <h2 id="sectionTitle">Welcome to My World</h2>
+            <div id="sectionContent">
+                <p>🚗 Drive around this interactive 3D world to explore my professional journey!</p>
+                <p>Use WASD keys to control the car and discover different areas of my portfolio.</p>
+                <p>⚡ This optimized version loads faster while maintaining the full experience.</p>
+            </div>
+        </div>
+
+        <!-- Interaction Hint -->
+        <div class="interaction-hint" id="interactionHint">
+            Drive to explore areas!
+        </div>
+    </div>
+
+    <!-- Three.js Scripts -->
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.158.0/build/three.module.js"
+        }
+    }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+
+        // ===== GLOBAL VARIABLES =====
+        let scene, camera, renderer, clock;
+        let car, carGroup;
+        let keys = {};
+        let carVelocity = new THREE.Vector3();
+        let currentSpeed = 0;
+        let currentSection = 'welcome';
+        let sectionAreas = [];
+
+        // Simplified car physics
+        const carProps = {
+            acceleration: 0.03,
+            maxSpeed: 1.2,
+            friction: 0.92,
+            turnSpeed: 0.04,
+            position: new THREE.Vector3(0, 0.5, 0),
+            rotation: 0
+        };
+
+        // Portfolio sections data
+        const portfolioSections = {
+            welcome: {
+                title: "Welcome to My Portfolio",
+                position: { x: 0, z: 0 },
+                content: `
+                    <p>🚗 Welcome to my fast-loading 3D portfolio! I'm Mohammed Saqhib, a Data Science enthusiast.</p>
+                    <p>This optimized version provides the same interactive experience with much faster loading times.</p>
+                    <p>Drive around to explore different sections of my professional journey!</p>
+                `
+            },
+            about: {
+                title: "About Mohammed Saqhib",
+                position: { x: -25, z: -15 },
+                content: `
+                    <p>I am an aspiring Data Science and Analytics Professional with a strong foundation in statistical analysis, machine learning, and data visualization.</p>
+                    <p>🎓 Based in Bengaluru, India, I combine technical expertise with analytical thinking to solve complex problems.</p>
+                    <p>💡 Passionate about transforming raw data into meaningful insights that drive business decisions.</p>
+                `
+            },
+            skills: {
+                title: "Technical Skills",
+                position: { x: 25, z: -15 },
+                content: `
+                    <p>My technical toolkit spans across various domains:</p>
+                    <p>💻 <strong>Programming:</strong> Python, R, SQL, JavaScript</p>
+                    <p>📊 <strong>Analysis:</strong> Pandas, NumPy, Power BI, Tableau</p>
+                    <p>🤖 <strong>ML/AI:</strong> Scikit-learn, TensorFlow, Keras</p>
+                    <p>☁️ <strong>Cloud:</strong> AWS, Azure, Docker, Git</p>
+                `
+            },
+            projects: {
+                title: "Featured Projects",
+                position: { x: 0, z: -30 },
+                content: `
+                    <p>Here are some of my key projects:</p>
+                    <p>🚀 <strong>Stock Prediction Dashboard:</strong> ML-powered analysis platform</p>
+                    <p>🛡️ <strong>Fraud Detection System:</strong> Real-time fraud detection using ML</p>
+                    <p>📱 <strong>Facial Recognition:</strong> Attendance management system</p>
+                    <p>🎯 <strong>Netflix Verification:</strong> User verification system</p>
+                `
+            },
+            contact: {
+                title: "Let's Connect",
+                position: { x: 15, z: -45 },
+                content: `
+                    <p>Ready to discuss opportunities or collaborate on projects?</p>
+                    <p>📧 <strong>Email:</strong> msaqhib76@gmail.com</p>
+                    <p>💼 <strong>LinkedIn:</strong> Connect with me professionally</p>
+                    <p>📍 <strong>Location:</strong> Bengaluru, Karnataka, India</p>
+                    <p>🤝 Currently available for data science roles and freelance projects!</p>
+                `
+            }
+        };
+
+        // ===== INITIALIZATION =====
+        function init() {
+            setupScene();
+            createWorld();
+            createCar();
+            createSectionAreas();
+            setupControls();
+            animate();
+            
+            // Fast loading simulation
+            setTimeout(() => {
+                document.getElementById('loadingScreen').classList.add('hidden');
+                document.getElementById('sectionPanel').classList.add('visible');
+            }, 1500);
+        }
+
+        // ===== SCENE SETUP =====
+        function setupScene() {
+            // Scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1a1a2e);
+            scene.fog = new THREE.Fog(0x1a1a2e, 30, 100);
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 12, 12);
+
+            // Renderer - Optimized settings
+            renderer = new THREE.WebGLRenderer({ 
+                antialias: false, // Disable for performance
+                powerPreference: "high-performance"
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.BasicShadowMap; // Faster shadow type
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Limit pixel ratio
+            document.body.appendChild(renderer.domElement);
+
+            // Clock
+            clock = new THREE.Clock();
+
+            // Simplified lighting
+            setupLighting();
+        }
+
+        // ===== LIGHTING =====
+        function setupLighting() {
+            // Ambient light
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+            scene.add(ambientLight);
+
+            // Main directional light
+            const directionalLight = new THREE.DirectionalLight(0x4a90e2, 0.8);
+            directionalLight.position.set(20, 30, 20);
+            directionalLight.castShadow = true;
+            
+            // Reduced shadow map size for performance
+            directionalLight.shadow.mapSize.width = 1024;
+            directionalLight.shadow.mapSize.height = 1024;
+            directionalLight.shadow.camera.near = 0.5;
+            directionalLight.shadow.camera.far = 100;
+            directionalLight.shadow.camera.left = -50;
+            directionalLight.shadow.camera.right = 50;
+            directionalLight.shadow.camera.top = 50;
+            directionalLight.shadow.camera.bottom = -50;
+            scene.add(directionalLight);
+        }
+
+        // ===== WORLD CREATION =====
+        function createWorld() {
+            // Ground
+            const groundGeometry = new THREE.PlaneGeometry(150, 150);
+            const groundMaterial = new THREE.MeshLambertMaterial({ 
+                color: 0x2c3e50,
+                transparent: true,
+                opacity: 0.8
+            });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.receiveShadow = true;
+            scene.add(ground);
+
+            // Create simple platforms for sections
+            createPlatforms();
+            
+            // Create basic decorations
+            createDecorations();
+        }
+
+        // ===== PLATFORMS =====
+        function createPlatforms() {
+            Object.values(portfolioSections).forEach((section, index) => {
+                if (section.position) {
+                    // Platform
+                    const platformGeometry = new THREE.BoxGeometry(8, 0.5, 8);
+                    const platformMaterial = new THREE.MeshLambertMaterial({ 
+                        color: index === 0 ? 0xff6b6b : 0x4ecdc4 
+                    });
+                    const platform = new THREE.Mesh(platformGeometry, platformMaterial);
+                    platform.position.set(section.position.x, 0.25, section.position.z);
+                    platform.castShadow = true;
+                    platform.receiveShadow = true;
+                    scene.add(platform);
+
+                    // Simple text marker
+                    const markerGeometry = new THREE.SphereGeometry(1, 8, 8);
+                    const markerMaterial = new THREE.MeshLambertMaterial({ 
+                        color: 0xffffff,
+                        emissive: 0x333333
+                    });
+                    const marker = new THREE.Mesh(markerGeometry, markerMaterial);
+                    marker.position.set(section.position.x, 2, section.position.z);
+                    scene.add(marker);
+                }
+            });
+        }
+
+        // ===== DECORATIONS =====
+        function createDecorations() {
+            // Simple trees/decorations
+            for (let i = 0; i < 20; i++) {
+                const treeGeometry = new THREE.ConeGeometry(1, 4, 6);
+                const treeMaterial = new THREE.MeshLambertMaterial({ color: 0x27ae60 });
+                const tree = new THREE.Mesh(treeGeometry, treeMaterial);
+                
+                const x = (Math.random() - 0.5) * 100;
+                const z = (Math.random() - 0.5) * 100;
+                tree.position.set(x, 2, z);
+                tree.castShadow = true;
+                scene.add(tree);
+            }
+        }
+
+        // ===== CAR CREATION =====
+        function createCar() {
+            carGroup = new THREE.Group();
+
+            // Car body - simplified
+            const bodyGeometry = new THREE.BoxGeometry(2, 0.8, 4);
+            const bodyMaterial = new THREE.MeshLambertMaterial({ color: 0xff6b6b });
+            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            body.position.y = 0.4;
+            body.castShadow = true;
+            carGroup.add(body);
+
+            // Car roof
+            const roofGeometry = new THREE.BoxGeometry(1.8, 0.6, 2);
+            const roofMaterial = new THREE.MeshLambertMaterial({ color: 0x34495e });
+            const roof = new THREE.Mesh(roofGeometry, roofMaterial);
+            roof.position.y = 1;
+            roof.castShadow = true;
+            carGroup.add(roof);
+
+            // Wheels - simplified
+            const wheelGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 8);
+            const wheelMaterial = new THREE.MeshLambertMaterial({ color: 0x2c3e50 });
+            
+            const wheelPositions = [
+                [-1.2, 0, 1.5], [1.2, 0, 1.5],
+                [-1.2, 0, -1.5], [1.2, 0, -1.5]
+            ];
+
+            wheelPositions.forEach(pos => {
+                const wheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
+                wheel.position.set(pos[0], pos[1], pos[2]);
+                wheel.rotation.z = Math.PI / 2;
+                wheel.castShadow = true;
+                carGroup.add(wheel);
+            });
+
+            carGroup.position.copy(carProps.position);
+            scene.add(carGroup);
+            car = carGroup;
+        }
+
+        // ===== SECTION AREAS =====
+        function createSectionAreas() {
+            Object.keys(portfolioSections).forEach(key => {
+                const section = portfolioSections[key];
+                if (section.position) {
+                    sectionAreas.push({
+                        name: key,
+                        position: new THREE.Vector3(section.position.x, 0, section.position.z),
+                        radius: 10
+                    });
+                }
+            });
+        }
+
+        // ===== CONTROLS =====
+        function setupControls() {
+            window.addEventListener('keydown', (e) => {
+                keys[e.key.toLowerCase()] = true;
+            });
+
+            window.addEventListener('keyup', (e) => {
+                keys[e.key.toLowerCase()] = false;
+            });
+
+            window.addEventListener('resize', onWindowResize);
+        }
+
+        // ===== CAR PHYSICS =====
+        function updateCarPhysics() {
+            const deltaTime = clock.getDelta();
+            
+            // Input handling
+            let acceleration = 0;
+            if (keys['w']) acceleration = carProps.acceleration;
+            if (keys['s']) acceleration = -carProps.acceleration * 0.6;
+            
+            let turning = 0;
+            if (keys['a']) turning = carProps.turnSpeed;
+            if (keys['d']) turning = -carProps.turnSpeed;
+            
+            // Reset position
+            if (keys['r']) {
+                car.position.copy(carProps.position);
+                car.rotation.y = 0;
+                carVelocity.set(0, 0, 0);
+                currentSpeed = 0;
+                return;
+            }
+
+            // Apply acceleration
+            if (acceleration !== 0) {
+                const direction = new THREE.Vector3(0, 0, acceleration);
+                direction.applyQuaternion(car.quaternion);
+                carVelocity.add(direction);
+            }
+
+            // Apply turning
+            if (turning !== 0 && currentSpeed > 0.01) {
+                car.rotation.y += turning * (currentSpeed / carProps.maxSpeed);
+            }
+
+            // Apply friction
+            carVelocity.multiplyScalar(carProps.friction);
+
+            // Limit speed
+            currentSpeed = carVelocity.length();
+            if (currentSpeed > carProps.maxSpeed) {
+                carVelocity.normalize().multiplyScalar(carProps.maxSpeed);
+                currentSpeed = carProps.maxSpeed;
+            }
+
+            // Update position
+            car.position.add(carVelocity);
+
+            // Update speed display
+            document.getElementById('speedValue').textContent = Math.round(currentSpeed * 100);
+        }
+
+        // ===== CAMERA =====
+        function updateCamera() {
+            const idealOffset = new THREE.Vector3(0, 8, 12);
+            idealOffset.applyQuaternion(car.quaternion);
+            idealOffset.add(car.position);
+
+            camera.position.lerp(idealOffset, 0.1);
+            camera.lookAt(car.position);
+        }
+
+        // ===== SECTION DETECTION =====
+        function checkSectionEntry() {
+            const carPos = car.position;
+            
+            sectionAreas.forEach(area => {
+                const distance = carPos.distanceTo(area.position);
+                if (distance < area.radius && currentSection !== area.name) {
+                    currentSection = area.name;
+                    updateSectionUI(portfolioSections[area.name]);
+                }
+            });
+        }
+
+        // ===== UI UPDATES =====
+        function updateSectionUI(sectionData) {
+            document.getElementById('sectionTitle').textContent = sectionData.title;
+            document.getElementById('sectionContent').innerHTML = sectionData.content;
+            
+            const panel = document.getElementById('sectionPanel');
+            panel.classList.remove('visible');
+            setTimeout(() => panel.classList.add('visible'), 100);
+        }
+
+        // ===== ANIMATION LOOP =====
+        function animate() {
+            requestAnimationFrame(animate);
+
+            updateCarPhysics();
+            updateCamera();
+            checkSectionEntry();
+
+            renderer.render(scene, camera);
+        }
+
+        // ===== UTILITY FUNCTIONS =====
+        function focusOnSection(sectionName) {
+            if (portfolioSections[sectionName]) {
+                const section = portfolioSections[sectionName];
+                car.position.set(section.position.x, 0.5, section.position.z + 8);
+                carVelocity.set(0, 0, 0);
+                currentSpeed = 0;
+                updateSectionUI(section);
+            }
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // Make focusOnSection globally available
+        window.focusOnSection = focusOnSection;
+
+        // ===== START THE EXPERIENCE =====
+        window.addEventListener('load', init);
+
+    </script>
+</body>
+</html>

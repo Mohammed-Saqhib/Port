@@ -228,10 +228,8 @@ document.addEventListener('DOMContentLoaded', function() {
         ScrollTrigger.create({
           trigger: elem,
           start: "top 90%", // Changed from default to 90%
-          end: "bottom 10%", // Added end point
           onEnter: function() { animateFrom(elem) }, 
-          onEnterBack: function() { animateFrom(elem, -1) },
-          onLeave: function() { hide(elem) } // assure that the element is hidden when scrolled into view
+          onEnterBack: function() { animateFrom(elem, -1) }
         });
       });
 

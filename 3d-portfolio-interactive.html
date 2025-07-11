@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive 3D Portfolio | Mohammed Saqhib</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="shortcut icon" type="image/x-icon" href="photos/logo.png" />
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            font-family: 'Poppins', sans-serif;
+            color: white;
+        }
+        canvas {
+            display: block;
+        }
+        .controls-info {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 15px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            z-index: 100;
+        }
+        .info-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            max-width: 300px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            z-index: 100;
+        }
+        .info-panel h3 {
+            color: #58a6ff;
+            margin-bottom: 10px;
+        }
+        .navigation-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+        }
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #58a6ff, #ff7b72);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(88, 166, 255, 0.4);
+        }
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 1000;
+        }
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(88, 166, 255, 0.3);
+            border-top: 3px solid #58a6ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+        <p>Loading Interactive 3D Portfolio...</p>
+    </div>
+
+    <a href="index.html" class="back-button">← Back to Portfolio</a>
+    
+    <div class="controls-info">
+        <strong>🚗 Drive around and explore!</strong><br>
+        Arrow Keys: Drive | Mouse: Look Around
+    </div>
+
+    <div class="info-panel" id="infoPanel">
+        <h3>Welcome to my Interactive Portfolio!</h3>
+        <p>Drive around to discover my projects and skills scattered throughout this 3D world.</p>
+        <p><strong>Current Speed:</strong> <span id="speedometer">0</span> km/h</p>
+    </div>
+
+    <div class="navigation-hint">
+        <strong>Navigation:</strong><br>
+        ↑ Accelerate | ↓ Reverse<br>
+        ← → Steer | Mouse: Camera
+    </div>
+            font-family: 'Poppins', sans-serif;
+            cursor: none;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        /* Custom Cursor */
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #58a6ff;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.1s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .custom-cursor.hover {
+            transform: translate(-50%, -50%) scale(1.5);
+        }
+
+        /* UI Elements */
+        .controls-info {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(20px);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            border: 1px solid #58a6ff;
+            text-align: center;
+            z-index: 100;
+        }
+
+        .navigation-bar {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            padding: 10px 15px;
+            background: rgba(88, 166, 255, 0.2);
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            text-decoration: none;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            background: #58a6ff;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .project-info-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            max-width: 350px;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid #58a6ff;
+            border-radius: 20px;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .project-info-panel.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .project-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #58a6ff;
+        }
+
+        .project-description {
+            margin-bottom: 15px;
+            opacity: 0.9;
+            line-height: 1.6;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .project-tech {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .tech-tag {
+            padding: 4px 12px;
+            background: rgba(88, 166, 255, 0.2);
+            border: 1px solid #58a6ff;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            color: #58a6ff;
+        }
+
+        .project-links {
+            display: flex;
+            gap: 10px;
+        }
+
+        .project-link {
+            padding: 8px 16px;
+            background: #58a6ff;
+            color: white;
+            border-radius: 15px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .project-link:hover {
+            background: #ff7b72;
+            transform: translateY(-2px);
+        }
+
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-text {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #58a6ff, #ff7b72);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 600;
+        }
+
+        .loading-bar {
+            width: 300px;
+            height: 6px;
+            background: rgba(88, 166, 255, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            border: 1px solid #58a6ff;
+        }
+
+        .loading-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #58a6ff, #ff7b72);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .speed-meter {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid #58a6ff;
+            border-radius: 15px;
+            padding: 15px;
+            color: white;
+            font-size: 0.9rem;
+            z-index: 100;
+        }
+
+        .minimap {
+            position: absolute;
+            top: 80px;
+            left: 20px;
+            width: 150px;
+            height: 150px;
+            background: rgba(10, 10, 10, 0.9);
+            border: 1px solid #58a6ff;
+            border-radius: 10px;
+            z-index: 100;
+        }
+
+        @media (max-width: 768px) {
+            .controls-info {
+                font-size: 14px;
+                padding: 10px 20px;
+            }
+            
+            .project-info-panel {
+                max-width: 280px;
+                bottom: 10px;
+                left: 10px;
+                right: 10px;
+                max-width: none;
+            }
+            
+            .navigation-bar {
+                top: 10px;
+                right: 10px;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="custom-cursor"></div>
+    
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-text">Initializing Interactive 3D Portfolio...</div>
+        <div class="loading-bar">
+            <div class="loading-progress" id="loadingProgress"></div>
+        </div>
+    </div>
+
+    <!-- Controls Info -->
+    <div class="controls-info">
+        🚗 Use <strong>WASD</strong> or <strong>Arrow Keys</strong> to drive around<br>
+        <small>Explore my projects in an interactive 3D world!</small>
+    </div>
+
+    <!-- Navigation -->
+    <div class="navigation-bar">
+        <a href="index.html" class="nav-btn">← Back to Portfolio</a>
+        <a href="3d-portfolio.html" class="nav-btn">🎨 Static 3D</a>
+    </div>
+
+    <!-- Speed Meter -->
+    <div class="speed-meter">
+        <div>Speed: <span id="speedValue">0</span> km/h</div>
+        <div>Projects Found: <span id="projectCount">6</span></div>
+    </div>
+
+    <!-- Project Information Panel -->
+    <div class="project-info-panel" id="projectInfo">
+        <div class="project-title" id="projectTitle">Project Title</div>
+        <div class="project-description" id="projectDescription">Drive near the project cubes to learn more!</div>
+        <div class="project-tech" id="projectTech"></div>
+        <div class="project-links" id="projectLinks"></div>
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.165.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.165.0/examples/jsm/",
+            "cannon-es": "https://unpkg.com/cannon-es@0.20.0/dist/cannon-es.js"
+        }
+    }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import * as CANNON from 'cannon-es';
+
+        // Global variables
+        let scene, camera, renderer, physicsWorld;
+        let chassisBody, chassisMesh, vehicle;
+        let wheelBodies = [], wheelMeshes = [];
+        let projectObjects = [], projectBodies = [];
+        let clock = new THREE.Clock();
+        let currentSpeed = 0;
+
+        // Custom cursor
+        const cursor = document.querySelector('.custom-cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        // Add hover effects
+        document.querySelectorAll('button, a, .nav-btn').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+
+        // Project data with enhanced details
+        const projects = [
+            {
+                title: "Advanced Stock Prediction Dashboard",
+                description: "Machine learning dashboard for stock market analysis with real-time predictions and interactive visualizations using advanced ML algorithms.",
+                tech: ["Python", "TensorFlow", "Flask", "React", "Docker"],
+                github: "https://github.com/Mohammed-Saqhib/Advanced-Stock-Prediction-Analysis-Dashboard",
+                demo: "#",
+                color: 0x58a6ff,
+                position: { x: -15, y: 1, z: 10 }
+            },
+            {
+                title: "Formula1 DataHub",
+                description: "Comprehensive F1 data analysis platform with race statistics, driver performance metrics, and predictive modeling for race outcomes.",
+                tech: ["Python", "Pandas", "Matplotlib", "SQL", "Streamlit"],
+                github: "https://github.com/Mohammed-Saqhib/Formula1-DataHub",
+                demo: "#",
+                color: 0xff7b72,
+                position: { x: 15, y: 1, z: 10 }
+            },
+            {
+                title: "Facial Recognition System",
+                description: "AI-powered attendance management system using facial recognition with real-time detection capabilities and automated reporting.",
+                tech: ["Python", "OpenCV", "TensorFlow", "SQLite", "tkinter"],
+                github: "https://github.com/Mohammed-Saqhib/Facial-Recognition-Attendance-Management-System",
+                demo: "#",
+                color: 0x22c55e,
+                position: { x: -15, y: 1, z: -10 }
+            },
+            {
+                title: "Fraud Detection System",
+                description: "Advanced machine learning system for detecting fraudulent transactions with high accuracy and real-time processing capabilities.",
+                tech: ["Python", "Scikit-learn", "Pandas", "Flask", "XGBoost"],
+                github: "https://github.com/Mohammed-Saqhib/fraud-detection-system",
+                demo: "#",
+                color: 0xa855f7,
+                position: { x: 15, y: 1, z: -10 }
+            },
+            {
+                title: "Kritya Fashion E-commerce",
+                description: "Modern e-commerce platform with responsive design, shopping cart functionality, and interactive user experience.",
+                tech: ["HTML5", "CSS3", "JavaScript", "Bootstrap", "PHP"],
+                github: "https://github.com/Mohammed-Saqhib/kritya-fashion",
+                demo: "#",
+                color: 0xf59e0b,
+                position: { x: 0, y: 1, z: 20 }
+            },
+            {
+                title: "Netflix Analysis Project",
+                description: "Data analysis project exploring Netflix content patterns, user behavior, and recommendation system insights.",
+                tech: ["Python", "Pandas", "Matplotlib", "Seaborn", "Jupyter"],
+                github: "https://github.com/Mohammed-Saqhib/Netflix-Household-Verify",
+                demo: "#",
+                color: 0xe11d48,
+                position: { x: 0, y: 1, z: -20 }
+            }
+        ];
+
+        // --- Scene Setup ---
+        function initScene() {
+            // Scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x000814);
+            scene.fog = new THREE.Fog(0x000814, 50, 200);
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 15, 25);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.outputEncoding = THREE.sRGBEncoding;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 0.5;
+            document.body.appendChild(renderer.domElement);
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0x58a6ff, 1.5);
+            directionalLight.position.set(50, 50, 25);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            directionalLight.shadow.camera.near = 0.1;
+            directionalLight.shadow.camera.far = 200;
+            directionalLight.shadow.camera.left = -50;
+            directionalLight.shadow.camera.right = 50;
+            directionalLight.shadow.camera.top = 50;
+            directionalLight.shadow.camera.bottom = -50;
+            scene.add(directionalLight);
+
+            // Accent lighting
+            const pointLight1 = new THREE.PointLight(0xff7b72, 0.8, 30);
+            pointLight1.position.set(-20, 10, 10);
+            scene.add(pointLight1);
+
+            const pointLight2 = new THREE.PointLight(0x22c55e, 0.8, 30);
+            pointLight2.position.set(20, 10, -10);
+            scene.add(pointLight2);
+        }
+
+        // --- Physics Setup ---
+        function initPhysics() {
+            physicsWorld = new CANNON.World({
+                gravity: new CANNON.Vec3(0, -15.82, 0),
+            });
+            physicsWorld.broadphase = new CANNON.NaiveBroadphase();
+            physicsWorld.solver.iterations = 10;
+        }
+
+        // --- Ground Creation ---
+        function createGround() {
+            // Visual ground with texture-like pattern
+            const groundGeometry = new THREE.PlaneGeometry(200, 200, 20, 20);
+            const groundMaterial = new THREE.MeshLambertMaterial({ 
+                color: 0x1a1a2e,
+                wireframe: false
+            });
+            const groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
+            groundMesh.rotation.x = -Math.PI / 2;
+            groundMesh.receiveShadow = true;
+            scene.add(groundMesh);
+
+            // Physics ground
+            const groundBody = new CANNON.Body({
+                type: CANNON.Body.STATIC,
+                shape: new CANNON.Plane(),
+            });
+            groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
+            physicsWorld.addBody(groundBody);
+
+            // Add grid pattern
+            const gridHelper = new THREE.GridHelper(200, 100, 0x58a6ff, 0x2a2a3e);
+            gridHelper.material.opacity = 0.3;
+            gridHelper.material.transparent = true;
+            scene.add(gridHelper);
+        }
+
+        // --- Vehicle Creation ---
+        function createVehicle() {
+            // Chassis physics
+            const chassisShape = new CANNON.Box(new CANNON.Vec3(2, 0.5, 1));
+            chassisBody = new CANNON.Body({ mass: 150 });
+            chassisBody.addShape(chassisShape);
+            chassisBody.position.set(0, 4, 0);
+
+            // Chassis visual - more car-like shape
+            const chassisGeometry = new THREE.BoxGeometry(4, 1, 2);
+            const chassisMaterial = new THREE.MeshLambertMaterial({ color: 0xff4444 });
+            chassisMesh = new THREE.Mesh(chassisGeometry, chassisMaterial);
+            chassisMesh.castShadow = true;
+            scene.add(chassisMesh);
+
+            // Add car details
+            const windshieldGeometry = new THREE.BoxGeometry(3.5, 0.8, 0.1);
+            const windshieldMaterial = new THREE.MeshLambertMaterial({ 
+                color: 0x333333, 
+                transparent: true, 
+                opacity: 0.8 
+            });
+            const windshield = new THREE.Mesh(windshieldGeometry, windshieldMaterial);
+            windshield.position.set(0, 0.4, 0.95);
+            chassisMesh.add(windshield);
+
+            // Vehicle controller
+            vehicle = new CANNON.RigidVehicle({
+                chassisBody: chassisBody,
+            });
+
+            // Wheel configuration
+            const wheelOptions = {
+                radius: 0.5,
+                directionLocal: new CANNON.Vec3(0, -1, 0),
+                suspensionStiffness: 30,
+                suspensionRestLength: 0.3,
+                frictionSlip: 1.4,
+                dampingRelaxation: 2.3,
+                dampingCompression: 4.4,
+                maxSuspensionTravel: 0.3,
+                customSlidingRotationalSpeed: -30,
+                axleLocal: new CANNON.Vec3(0, 0, 1),
+                useCustomSlidingRotationalSpeed: true
+            };
+
+            // Add wheels
+            const wheelPositions = [
+                new CANNON.Vec3(-1.5, 0, 1),   // Front left
+                new CANNON.Vec3(-1.5, 0, -1),  // Front right
+                new CANNON.Vec3(1.5, 0, 1),    // Rear left
+                new CANNON.Vec3(1.5, 0, -1)    // Rear right
+            ];
+
+            wheelPositions.forEach((pos, index) => {
+                const wheelBody = new CANNON.Body({ 
+                    mass: 1, 
+                    shape: new CANNON.Sphere(wheelOptions.radius) 
+                });
+                
+                const wheelGeometry = new THREE.CylinderGeometry(
+                    wheelOptions.radius, 
+                    wheelOptions.radius, 
+                    0.3, 
+                    8
+                );
+                const wheelMaterial = new THREE.MeshLambertMaterial({ color: 0x333333 });
+                const wheelMesh = new THREE.Mesh(wheelGeometry, wheelMaterial);
+                wheelMesh.castShadow = true;
+                
+                vehicle.addWheel({ ...wheelOptions, position: pos, body: wheelBody });
+                scene.add(wheelMesh);
+                wheelBodies.push(wheelBody);
+                wheelMeshes.push(wheelMesh);
+            });
+            
+            vehicle.addToWorld(physicsWorld);
+        }
+
+        // --- Create Project Objects ---
+        function createProjects() {
+            projects.forEach((project, index) => {
+                // Create floating cube for project
+                const cubeSize = 2;
+                const cubeGeometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
+                const cubeMaterial = new THREE.MeshLambertMaterial({ 
+                    color: project.color,
+                    transparent: true,
+                    opacity: 0.8
+                });
+                const cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial);
+                cubeMesh.position.set(project.position.x, project.position.y + 2, project.position.z);
+                cubeMesh.castShadow = true;
+                
+                // Add wireframe outline
+                const wireframeGeometry = new THREE.WireframeGeometry(cubeGeometry);
+                const wireframeMaterial = new THREE.LineBasicMaterial({ 
+                    color: 0xffffff, 
+                    opacity: 0.4, 
+                    transparent: true 
+                });
+                const wireframe = new THREE.LineSegments(wireframeGeometry, wireframeMaterial);
+                cubeMesh.add(wireframe);
+                
+                // Add floating animation
+                cubeMesh.userData = { 
+                    originalY: project.position.y + 2,
+                    floatOffset: index * 0.5,
+                    project: project
+                };
+                
+                scene.add(cubeMesh);
+                projectObjects.push(cubeMesh);
+
+                // Create physics body for interaction detection
+                const cubeBody = new CANNON.Body({
+                    mass: 0, // Static for now
+                    shape: new CANNON.Box(new CANNON.Vec3(cubeSize/2, cubeSize/2, cubeSize/2)),
+                    position: new CANNON.Vec3(project.position.x, project.position.y, project.position.z)
+                });
+                physicsWorld.addBody(cubeBody);
+                projectBodies.push(cubeBody);
+
+                // Add project title billboard
+                createProjectLabel(project.title, project.position);
+            });
+        }
+
+        // --- Create Project Label ---
+        function createProjectLabel(title, position) {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = 256;
+            canvas.height = 64;
+            
+            context.fillStyle = 'rgba(10, 10, 10, 0.8)';
+            context.fillRect(0, 0, 256, 64);
+            
+            context.strokeStyle = '#58a6ff';
+            context.lineWidth = 2;
+            context.strokeRect(0, 0, 256, 64);
+            
+            context.fillStyle = '#ffffff';
+            context.font = 'bold 16px Poppins, Arial';
+            context.textAlign = 'center';
+            context.fillText(title, 128, 32);
+            
+            const texture = new THREE.CanvasTexture(canvas);
+            const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+            const sprite = new THREE.Sprite(spriteMaterial);
+            sprite.position.set(position.x, position.y + 5, position.z);
+            sprite.scale.set(8, 2, 1);
+            scene.add(sprite);
+        }
+
+        // --- Environment Effects ---
+        function createEnvironment() {
+            // Starfield
+            const starsGeometry = new THREE.BufferGeometry();
+            const starsMaterial = new THREE.PointsMaterial({ 
+                color: 0xffffff, 
+                size: 0.1,
+                transparent: true,
+                opacity: 0.8
+            });
+
+            const starsVertices = [];
+            for (let i = 0; i < 10000; i++) {
+                const x = (Math.random() - 0.5) * 2000;
+                const y = (Math.random() - 0.5) * 2000;
+                const z = (Math.random() - 0.5) * 2000;
+                starsVertices.push(x, y, z);
+            }
+
+            starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starsVertices, 3));
+            const stars = new THREE.Points(starsGeometry, starsMaterial);
+            scene.add(stars);
+
+            // Floating particles
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesMaterial = new THREE.PointsMaterial({
+                color: 0x58a6ff,
+                size: 0.05,
+                transparent: true,
+                opacity: 0.6
+            });
+
+            const particlesVertices = [];
+            for (let i = 0; i < 1000; i++) {
+                const x = (Math.random() - 0.5) * 100;
+                const y = Math.random() * 20 + 5;
+                const z = (Math.random() - 0.5) * 100;
+                particlesVertices.push(x, y, z);
+            }
+
+            particlesGeometry.setAttribute('position', new THREE.Float32BufferAttribute(particlesVertices, 3));
+            const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particles);
+        }
+
+        // --- Controls ---
+        const keys = {};
+        document.addEventListener('keydown', (e) => keys[e.key.toLowerCase()] = true);
+        document.addEventListener('keyup', (e) => keys[e.key.toLowerCase()] = false);
+
+        function updateVehicleControls() {
+            const maxSteerVal = 0.5;
+            const maxForce = 1500;
+            
+            // Steering (A/D or Left/Right arrows)
+            let steerValue = 0;
+            if (keys['a'] || keys['arrowleft']) steerValue = maxSteerVal;
+            if (keys['d'] || keys['arrowright']) steerValue = -maxSteerVal;
+            
+            vehicle.setSteeringValue(steerValue, 0);
+            vehicle.setSteeringValue(steerValue, 1);
+            
+            // Driving force (W/S or Up/Down arrows)
+            let force = 0;
+            if (keys['w'] || keys['arrowup']) force = -maxForce;
+            if (keys['s'] || keys['arrowdown']) force = maxForce;
+            
+            vehicle.applyEngineForce(force, 2);
+            vehicle.applyEngineForce(force, 3);
+
+            // Calculate speed for display
+            const velocity = chassisBody.velocity;
+            currentSpeed = Math.sqrt(velocity.x * velocity.x + velocity.z * velocity.z) * 3.6; // Convert to km/h
+            document.getElementById('speedValue').textContent = Math.round(currentSpeed);
+        }
+
+        // --- Project Interaction ---
+        function checkProjectProximity() {
+            const chassisPosition = chassisBody.position;
+            let nearestProject = null;
+            let nearestDistance = Infinity;
+
+            projectObjects.forEach((projectObj) => {
+                const distance = chassisPosition.distanceTo(
+                    new CANNON.Vec3(
+                        projectObj.position.x,
+                        projectObj.position.y - 2,
+                        projectObj.position.z
+                    )
+                );
+
+                if (distance < 8 && distance < nearestDistance) {
+                    nearestDistance = distance;
+                    nearestProject = projectObj.userData.project;
+                }
+            });
+
+            if (nearestProject) {
+                showProjectInfo(nearestProject);
+            } else {
+                hideProjectInfo();
+            }
+        }
+
+        function showProjectInfo(project) {
+            const projectInfo = document.getElementById('projectInfo');
+            document.getElementById('projectTitle').textContent = project.title;
+            document.getElementById('projectDescription').textContent = project.description;
+            
+            const techContainer = document.getElementById('projectTech');
+            techContainer.innerHTML = '';
+            project.tech.forEach(tech => {
+                const tag = document.createElement('span');
+                tag.className = 'tech-tag';
+                tag.textContent = tech;
+                techContainer.appendChild(tag);
+            });
+            
+            const linksContainer = document.getElementById('projectLinks');
+            linksContainer.innerHTML = `
+                <a href="${project.github}" class="project-link" target="_blank">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+                <a href="${project.demo}" class="project-link" target="_blank">
+                    <i class="fas fa-external-link-alt"></i> Demo
+                </a>
+            `;
+            
+            projectInfo.classList.add('active');
+        }
+
+        function hideProjectInfo() {
+            document.getElementById('projectInfo').classList.remove('active');
+        }
+
+        // --- Animation Loop ---
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const deltaTime = clock.getDelta();
+            
+            // Update physics
+            physicsWorld.step(1 / 60, deltaTime, 3);
+
+            // Update vehicle controls
+            updateVehicleControls();
+
+            // Update chassis visual
+            chassisMesh.position.copy(chassisBody.position);
+            chassisMesh.quaternion.copy(chassisBody.quaternion);
+            
+            // Update wheels
+            for (let i = 0; i < wheelMeshes.length; i++) {
+                wheelMeshes[i].position.copy(wheelBodies[i].position);
+                wheelMeshes[i].quaternion.copy(wheelBodies[i].quaternion);
+            }
+
+            // Animate project cubes
+            projectObjects.forEach((obj, index) => {
+                obj.rotation.x += 0.01;
+                obj.rotation.y += 0.01;
+                obj.position.y = obj.userData.originalY + Math.sin(Date.now() * 0.001 + obj.userData.floatOffset) * 0.5;
+            });
+
+            // Update camera to follow car
+            const chassisPosition = chassisBody.position;
+            const cameraOffset = new THREE.Vector3(0, 12, 20);
+            const targetPosition = chassisPosition.clone().add(cameraOffset);
+            camera.position.lerp(targetPosition, 0.1);
+            camera.lookAt(chassisPosition);
+
+            // Check project proximity
+            checkProjectProximity();
+
+            renderer.render(scene, camera);
+        }
+
+        // --- Loading and Initialization ---
+        function updateLoadingProgress() {
+            const progressBar = document.getElementById('loadingProgress');
+            let progress = 0;
+            
+            const interval = setInterval(() => {
+                progress += Math.random() * 10 + 5;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    setTimeout(hideLoadingScreen, 500);
+                }
+                progressBar.style.width = progress + '%';
+            }, 150);
+        }
+
+        function hideLoadingScreen() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            loadingScreen.style.opacity = '0';
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+            }, 500);
+        }
+
+        function init() {
+            initScene();
+            initPhysics();
+            createGround();
+            createVehicle();
+            createProjects();
+            createEnvironment();
+            animate();
+        }
+
+        // Handle window resizing
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Start everything
+        window.addEventListener('load', () => {
+            updateLoadingProgress();
+            init();
+        });
+
+    </script>
+</body>
+</html>

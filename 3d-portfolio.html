@@ -319,15 +319,14 @@
                 bottom: 1rem;
             }
         }
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        
 
-        .floating-icons {}
+        .floating-icons {
             position: absolute;
             width: 100%;
             height: 100%;
             overflow: hidden;
             pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -348,6 +347,7 @@
             <div class="nav-controls">
                 <button class="control-btn" id="autoRotate">Auto Rotate</button>
                 <button class="control-btn" id="resetView">Reset View</button>
+                <a href="3d-portfolio-interactive.html" class="control-btn" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white;">🚗 Interactive World</a>
                 <a href="index.html" class="control-btn">← Back to 2D</a>
             </div>
         </div>
@@ -535,8 +535,43 @@
             // Create floating particles
             createParticles();
 
-            // Mouse controls (simple rotation)
-            setupMouseControls();
+            // Add a central plane for your photo
+            const photoTexture = new THREE.TextureLoader().load('photos/abk.png');
+            const photoMaterial = new THREE.MeshBasicMaterial({ 
+                map: photoTexture, 
+                transparent: true,
+                side: THREE.DoubleSide
+            });
+            const photoGeometry = new THREE.PlaneGeometry(4, 4);
+            const photoPlane = new THREE.Mesh(photoGeometry, photoMaterial);
+            photoPlane.position.set(0, 0, 0);
+            
+            // Add a subtle glow effect around the photo
+            const glowGeometry = new THREE.PlaneGeometry(4.5, 4.5);
+            const glowMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0x58a6ff, 
+                transparent: true, 
+                opacity: 0.2,
+                side: THREE.DoubleSide
+            });
+            const glowPlane = new THREE.Mesh(glowGeometry, glowMaterial);
+            glowPlane.position.set(0, 0, -0.1);
+            
+            scene.add(glowPlane);
+            scene.add(photoPlane);
+
+            // Make photo rotate slowly
+            function animatePhoto() {
+                photoPlane.rotation.y += 0.005;
+                glowPlane.rotation.y -= 0.003;
+            }
+            
+            // Add this to your existing animate function
+            const originalAnimate = animate;
+            animate = function() {
+                animatePhoto();
+                originalAnimate.call(this);
+            };
 
             // Event listeners
             setupEventListeners();

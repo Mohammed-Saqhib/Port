@@ -25,40 +25,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // --- 2. Lenis Smooth Scrolling with Fallback ---
-    let lenis;
-    try {
-        lenis = new Lenis({
-            duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            direction: 'vertical',
-            gestureDirection: 'vertical',
-            smooth: true,
-            mouseMultiplier: 1,
-            smoothTouch: false,
-            touchMultiplier: 2,
-            infinite: false,
-        });
-
-        function raf(time) {
-            lenis.raf(time);
-            requestAnimationFrame(raf);
-        }
-        requestAnimationFrame(raf);
-
-        // Integrate Lenis with GSAP ScrollTrigger
-        lenis.on('scroll', ScrollTrigger.update);
-        gsap.ticker.add((time)=>{
-            lenis.raf(time * 1000)
-        });
-        gsap.ticker.lagSmoothing(0);
-        
-        console.log('Lenis smooth scrolling initialized');
-    } catch (error) {
-        console.warn('Lenis failed to initialize, falling back to native scrolling:', error);
-        // Fallback to CSS smooth scrolling
-        document.documentElement.style.scrollBehavior = 'smooth';
-    }
+    // --- 2. Simple Smooth Scrolling ---
+    // Use native CSS smooth scrolling instead of Lenis
+    document.documentElement.style.scrollBehavior = 'smooth';
+    
+    // Simple scroll variables for compatibility
+    let lenis = null; // Set to null for compatibility with existing code
 
 
     // --- 3. Theme Toggle Functionality ---
@@ -133,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // --- 7. Project Filtering ---
+    // --- 7. Enhanced Project Filtering ---
     const filterButtons = document.querySelectorAll('.filter-btn');
     const projectElements = document.querySelectorAll('.project-tile');
 
@@ -146,15 +118,69 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const filterValue = btn.getAttribute('data-filter');
             
+            // First, hide all projects with a fade out
             projectElements.forEach(tile => {
-                if (filterValue === 'all' || tile.getAttribute('data-category') === filterValue) {
-                    tile.classList.remove('hidden');
-                    tile.style.opacity = '1';
-                    tile.style.visibility = 'visible';
-                    tile.style.transform = 'scale(1)';
-                } else {
-                    tile.classList.add('hidden');
+                tile.style.animation = 'none';
+                tile.classList.add('hidden');
+            });
+            
+            // Then show relevant projects with a delay for smooth animation
+            setTimeout(() => {
+                projectElements.forEach((tile, index) => {
+                    if (filterValue === 'all' || tile.getAttribute('data-category') === filterValue) {
+                        tile.classList.remove('hidden');
+                        // Remove any inline styles that might conflict
+                        tile.style.removeProperty('opacity');
+                        tile.style.removeProperty('visibility');
+                        tile.style.removeProperty('transform');
+                        tile.style.removeProperty('display');
+                        
+                        // Add staggered animation delay
+                        tile.style.animationDelay = `${index * 0.1}s`;
+                    }
+                });
+                
+                // Update project counter
+                updateProjectCounter(filterValue);
+            }, 150);
+
+            // --- Project Counter Update ---
+            function updateProjectCounter(activeFilter) {
+                const visibleProjects = document.querySelectorAll(`.project-tile:not(.hidden)`);
+                console.log(`Filter: ${activeFilter}, Visible projects: ${visibleProjects.length}`);
+                
+                // Optional: Add a project counter display
+                let counter = document.querySelector('.project-counter');
+                if (!counter) {
+                    counter = document.createElement('div');
+                    counter.className = 'project-counter';
+                    counter.style.cssText = `
+                        text-align: center;
+                        margin: 1rem 0;
+                        font-size: 0.9rem;
+                        opacity: 0.7;
+                        transition: opacity 0.3s ease;
+                    `;
+                    const projectsGrid = document.querySelector('.projects-grid');
+                    if (projectsGrid) {
+                        projectsGrid.parentNode.insertBefore(counter, projectsGrid.nextSibling);
+                    }
                 }
+                
+                if (activeFilter === 'all') {
+                    counter.textContent = `Showing all ${visibleProjects.length} projects`;
+                } else {
+                    const categoryName = activeFilter.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    counter.textContent = `Showing ${visibleProjects.length} ${categoryName} projects`;
+                }
+            }
+
+            // Update counter initially
+            updateProjectCounter('all');
+
+            // Update counter on filter button click
+            btn.addEventListener('click', () => {
+                updateProjectCounter(btn.getAttribute('data-filter'));
             });
         });
     });
@@ -234,17 +260,29 @@ document.addEventListener('DOMContentLoaded', function() {
         delay: 0.3 // Reduced from 0.5 to 0.3
       });
 
-      // Skill Cards Stagger Animation
+      // Skill Cards Stagger Animation - FIXED FOR VISIBILITY
+      gsap.set(".skill-card", {opacity: 1, visibility: "visible"}); // Ensure skills are visible
       gsap.from(".skill-card", {
         scrollTrigger: {
           trigger: ".skills-grid",
-          start: "top 85%" // Changed from 80% to 85%
+          start: "top 90%",
+          onComplete: () => {
+            // Ensure skills remain visible after animation
+            gsap.set(".skill-card", {opacity: 1, visibility: "visible"});
+          }
         },
-        duration: 0.6, // Reduced from 0.8 to 0.6
-        y: 30, // Reduced from 50 to 30
+        duration: 0.6,
+        y: 20,
         opacity: 0,
-        stagger: 0.08, // Reduced from 0.1 to 0.08
-        ease: "power2.out" // Changed from back.out(1.7) to power2.out
+        stagger: 0.08,
+        ease: "power2.out",
+        onComplete: () => {
+          // Double-check visibility after animation completes
+          document.querySelectorAll('.skill-card').forEach(card => {
+            card.style.opacity = '1';
+            card.style.visibility = 'visible';
+          });
+        }
       });
 
       // Project Cards Stagger Animation - SIMPLIFIED
@@ -545,6 +583,161 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // --- SKILLS SECTION FORCE VISIBILITY ---
+    function ensureSkillsVisibility() {
+        const skillsSection = document.getElementById('skills');
+        const skillsGrid = document.querySelector('.skills-grid');
+        const skillCards = document.querySelectorAll('.skill-card');
+        
+        if (skillsSection) {
+            skillsSection.style.display = 'block';
+            skillsSection.style.opacity = '1';
+            skillsSection.style.visibility = 'visible';
+        }
+        
+        if (skillsGrid) {
+            skillsGrid.style.display = 'grid';
+            skillsGrid.style.opacity = '1';
+            skillsGrid.style.visibility = 'visible';
+        }
+        
+        skillCards.forEach(card => {
+            card.style.display = 'block';
+            card.style.opacity = '1';
+            card.style.visibility = 'visible';
+            card.style.transform = 'none';
+        });
+        
+        console.log(`✅ Skills visibility ensured: ${skillCards.length} cards visible`);
+    }
+    
+    // Apply immediately and after delays
+    ensureSkillsVisibility();
+    setTimeout(ensureSkillsVisibility, 100);
+    setTimeout(ensureSkillsVisibility, 500);
+    setTimeout(ensureSkillsVisibility, 1000);
+
+    // --- ENHANCED PROJECT FILTERING WITH BETTER SPACING ---
+    function initializeProjectFiltering() {
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const projectsGrid = document.querySelector('.projects-grid');
+        
+        if (!filterButtons.length || !projectsGrid) return;
+        
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const filterValue = btn.getAttribute('data-filter');
+                const allProjects = document.querySelectorAll('.project-tile');
+                
+                // Update active button
+                filterButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Apply filtering with proper display management
+                allProjects.forEach(project => {
+                    const category = project.getAttribute('data-category');
+                    const shouldShow = filterValue === 'all' || category === filterValue;
+                    
+                    if (shouldShow) {
+                        project.classList.remove('hidden');
+                        project.style.display = 'block';
+                    } else {
+                        project.classList.add('hidden');
+                        project.style.display = 'none';
+                    }
+                });
+                
+                // Trigger grid reflow
+                projectsGrid.style.display = 'grid';
+                
+                // Count visible projects
+                const visibleCount = document.querySelectorAll('.project-tile:not(.hidden)').length;
+                console.log(`Filter "${filterValue}": ${visibleCount} projects visible`);
+            });
+        });
+        
+        console.log('✅ Enhanced project filtering initialized');
+    }
+    
+    // Initialize project filtering
+    setTimeout(initializeProjectFiltering, 100);
+
+    // --- Skills Section Visibility Fix ---
+    // Ensure skills are always visible
+    const skillCards = document.querySelectorAll('.skill-card');
+    const skillsGrid = document.querySelector('.skills-grid');
+    
+    if (skillsGrid) {
+        skillsGrid.style.opacity = '1';
+        skillsGrid.style.visibility = 'visible';
+    }
+    
+    skillCards.forEach(card => {
+        card.style.opacity = '1';
+        card.style.visibility = 'visible';
+        card.style.transform = 'none';
+    });
+    
+    // Additional fallback after a delay
+    setTimeout(() => {
+        const skills = document.querySelectorAll('.skill-card');
+        skills.forEach(skill => {
+            if (skill.style.opacity === '0' || skill.style.visibility === 'hidden') {
+                skill.style.opacity = '1';
+                skill.style.visibility = 'visible';
+                skill.style.transform = 'none';
+            }
+        });
+        console.log(`✅ Skills visibility verified: ${skills.length} skill cards`);
+    }, 2000);
+
+    // --- EMERGENCY SKILLS VISIBILITY OVERRIDE ---
+    function forceSkillsVisibility() {
+        const skillsSection = document.getElementById('skills');
+        const skillsGrid = document.querySelector('.skills-grid');
+        const skillCards = document.querySelectorAll('.skill-card');
+        
+        if (skillsSection) {
+            skillsSection.style.display = 'block';
+            skillsSection.style.opacity = '1';
+            skillsSection.style.visibility = 'visible';
+        }
+        
+        if (skillsGrid) {
+            skillsGrid.style.display = 'grid';
+            skillsGrid.style.opacity = '1';
+            skillsGrid.style.visibility = 'visible';
+            skillsGrid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(160px, 1fr))';
+        }
+        
+        skillCards.forEach((card, index) => {
+            card.style.opacity = '1';
+            card.style.visibility = 'visible';
+            card.style.transform = 'none';
+            card.style.display = 'block';
+            card.style.transition = 'all 0.3s ease';
+            
+            // Add a slight delay for visual effect
+            setTimeout(() => {
+                card.style.transform = 'scale(1)';
+            }, index * 100);
+        });
+        
+        console.log(`✅ Forced visibility for ${skillCards.length} skill cards`);
+    }
+    
+    // Apply immediately and after short delays
+    forceSkillsVisibility();
+    setTimeout(forceSkillsVisibility, 500);
+    setTimeout(forceSkillsVisibility, 1000);
+    setTimeout(forceSkillsVisibility, 2000);
+
     console.log('✅ All portfolio enhancements loaded and optimized!');
+
+    // Initialize project counter on page load
+    setTimeout(() => {
+        updateProjectCounter('all');
+        console.log('✅ Project filtering system initialized');
+    }, 500);
 
 }); // End of DOMContentLoaded

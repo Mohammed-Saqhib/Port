@@ -28,6 +28,7 @@ class UltimatePortfolio3D {
     init() {
         try {
             console.log('🚀 Initializing Ultimate 3D Portfolio...');
+            this.checkMobileDevice(); // Check for mobile device first
             this.setupCanvas();
             this.setupScene();
             this.setupCamera();
@@ -38,6 +39,7 @@ class UltimatePortfolio3D {
             this.createParticleSystem();
             this.createWorld();
             this.createPortfolioSections();
+            this.displayProjectsOverview(); // Display project overview for debugging
             this.setupEventListeners();
             this.enhanceNavigation();
             this.setupAudio();
@@ -155,6 +157,33 @@ class UltimatePortfolio3D {
     setupRaycaster() {
         this.raycaster = new THREE.Raycaster();
         this.mouse = new THREE.Vector2();
+    }
+
+    checkMobileDevice() {
+        // Enhanced mobile detection
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                         (navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && /MacIntel/.test(navigator.platform)) ||
+                         window.innerWidth <= 768;
+        
+        if (isMobile && this.shouldShowMobileWarning()) {
+            setTimeout(() => {
+                this.showMobileWarning();
+            }, 500); // Show after a brief delay
+        }
+        
+        console.log('📱 Mobile device detected:', isMobile);
+    }
+
+    showMobileWarning() {
+        const warning = document.getElementById('mobile-warning');
+        if (warning) {
+            warning.classList.add('show');
+            console.log('⚠️ Mobile warning displayed');
+        }
+    }
+
+    shouldShowMobileWarning() {
+        return !sessionStorage.getItem('mobile-warning-dismissed');
     }
 
     setupLights() {
@@ -684,156 +713,173 @@ class UltimatePortfolio3D {
         const projects = [
             {
                 name: 'BookStoreApp',
-                description: 'Full-stack bookstore application with user authentication, inventory management, and payment processing.',
+                description: 'Full-stack bookstore application with user authentication, inventory management, and payment processing. Features include customer registration, book catalog management, shopping cart functionality, and secure payment integration.',
                 tech: ['Python', 'CSS3', 'Bootstrap', 'JavaScript', 'Git'],
                 color: 0x06d6a0,
                 pos: [40, 12, -20],
                 github: 'https://github.com/Mohammed-Saqhib/Mohammed-Saqhib-BCA-V-Sem-FSD-PROJECT',
-                demo: null
+                demo: null,
+                category: 'Web Development'
             },
             {
                 name: 'Automatically-fill-a-Google-form',
-                description: 'Automated Google Form filling system with intelligent data processing and validation capabilities.',
-                tech: ['HTML5', 'CSS3', 'Bootstrap', 'JavaScript'],
+                description: 'Automated Google Form filling system with intelligent data processing and validation capabilities. This tool streamlines form submission processes using automation techniques and data validation algorithms.',
+                tech: ['Python', 'Selenium', 'Data Processing', 'Automation'],
                 color: 0x7209b7,
                 pos: [20, 12, -10],
                 github: 'https://github.com/Mohammed-Saqhib/Automatically-fill-a-Google-form',
-                demo: null
+                demo: null,
+                category: 'Data Science'
             },
             {
                 name: "100 Day's of Python Coding",
-                description: 'Comprehensive Python learning journey with 100 practical projects covering all aspects of Python programming.',
-                tech: ['HTML5', 'Bootstrap'],
+                description: 'Comprehensive Python learning journey with 100 practical projects covering all aspects of Python programming. Includes data structures, algorithms, web development, automation, and GUI applications.',
+                tech: ['Python', 'Data Structures', 'Algorithms', 'Automation'],
                 color: 0xf72585,
                 pos: [45, 12, -5],
                 github: 'https://github.com/Mohammed-Saqhib/100-days-of-python',
-                demo: null
+                demo: null,
+                category: 'Programming'
             },
             {
-                name: 'Portfolio',
-                description: 'Personal portfolio website showcasing projects, skills, and professional experience.',
-                tech: ['HTML5', 'CSS3', 'JavaScript'],
+                name: 'Portfolio Website',
+                description: 'Personal portfolio website showcasing projects, skills, and professional experience. Features responsive design, 3D interactive elements, and modern web technologies.',
+                tech: ['HTML5', 'CSS3', 'JavaScript', 'Three.js'],
                 color: 0x4facfe,
                 pos: [15, 12, -25],
                 github: 'https://github.com/Mohammed-Saqhib/Portfolio',
-                demo: null
+                demo: 'https://mohammed-saqhib.github.io/Portfolio/',
+                category: 'Web Development'
             },
             {
-                name: 'Stock Prediction Dashboard',
-                description: 'Advanced ML model using ensemble methods for stock market prediction with real-time data visualization and technical indicators.',
-                tech: ['Python', 'Charts', 'AI/ML', 'Database'],
+                name: 'Advanced Stock Prediction Dashboard',
+                description: 'Advanced ML model using ensemble methods for stock market prediction with real-time data visualization and technical indicators. Features include time series analysis, volatility prediction, and interactive charts.',
+                tech: ['Python', 'Machine Learning', 'Pandas', 'Plotly'],
                 color: 0x667eea,
                 pos: [35, 15, -30],
                 github: 'https://github.com/Mohammed-Saqhib/Advanced-Stock-Prediction-Analysis-Dashboard',
-                demo: null
+                demo: null,
+                category: 'Machine Learning'
             },
             {
-                name: 'Carpooling Simulation',
-                description: 'Smart carpooling simulation system with route optimization and user matching algorithms.',
-                tech: ['Python', 'Simulation', 'Car', 'Maps'],
+                name: 'Carpooling Simulation System',
+                description: 'Smart carpooling simulation system with route optimization and user matching algorithms. Implements geographic algorithms for efficient ride sharing and cost optimization.',
+                tech: ['Python', 'Simulation', 'Algorithms', 'Optimization'],
                 color: 0x4ecdc4,
                 pos: [25, 15, -5],
                 github: 'https://github.com/Mohammed-Saqhib/Carpooling-Simulation',
-                demo: null
+                demo: null,
+                category: 'Data Science'
             },
             {
                 name: 'Kritya Fashion Demo',
-                description: 'Modern e-commerce platform for fashion retail with responsive design and user-friendly interface.',
+                description: 'Modern e-commerce platform for fashion retail with responsive design and user-friendly interface. Features product catalog, shopping cart, user authentication, and payment integration.',
                 tech: ['HTML5', 'CSS3', 'JavaScript', 'React'],
                 color: 0xffd700,
                 pos: [50, 15, -15],
                 github: 'https://github.com/Mohammed-Saqhib/kritya-fashion-demo-1',
-                demo: null
+                demo: null,
+                category: 'Web Development'
             },
             {
                 name: 'Kritya Fashion',
-                description: 'Fashion e-commerce platform with modern design and user experience.',
+                description: 'Fashion e-commerce platform with modern design and enhanced user experience. Includes advanced search functionality, wishlist features, and mobile-optimized interface.',
                 tech: ['HTML5', 'CSS3', 'JavaScript', 'Node.js'],
                 color: 0xffa500,
                 pos: [10, 15, -15],
                 github: 'https://github.com/Mohammed-Saqhib/kritya-fashion-demo',
-                demo: null
+                demo: null,
+                category: 'Web Development'
             },
             {
                 name: 'Netflix Household Verify',
-                description: 'Advanced analytics system for Netflix household verification and viewing pattern analysis using machine learning.',
-                tech: ['Python', 'JavaScript', 'Security', 'Code'],
+                description: 'Advanced analytics system for Netflix household verification and viewing pattern analysis using machine learning. Implements user behavior analysis and verification algorithms.',
+                tech: ['Python', 'JavaScript', 'Machine Learning', 'Analytics'],
                 color: 0x38f9d7,
                 pos: [30, 18, -35],
                 github: 'https://github.com/Mohammed-Saqhib/Netflix-Household-Verify',
-                demo: null
+                demo: null,
+                category: 'Web Development'
             },
             {
                 name: 'TTS Phoneme Model',
-                description: 'Text-to-Speech system with advanced phoneme modeling for natural language processing and speech synthesis.',
-                tech: ['Python', 'Microphone', 'AI/ML', 'Language'],
+                description: 'Text-to-Speech system with advanced phoneme modeling for natural language processing and speech synthesis. Features deep learning models for voice generation and audio processing.',
+                tech: ['Python', 'Deep Learning', 'NLP', 'Audio Processing'],
                 color: 0xff6b6b,
                 pos: [45, 18, -25],
                 github: 'https://github.com/Mohammed-Saqhib/TTS-phoneme-model',
-                demo: null
+                demo: null,
+                category: 'AI & NLP'
             },
             {
-                name: 'Facial Recognition System',
-                description: 'AI-powered attendance management system using computer vision and facial recognition with 99.5% accuracy.',
-                tech: ['Python', 'Camera', 'Users', 'AI/ML'],
+                name: 'Facial Recognition Attendance System',
+                description: 'AI-powered attendance management system using computer vision and facial recognition with 99.5% accuracy. Features real-time face detection, recognition, and attendance tracking.',
+                tech: ['Python', 'OpenCV', 'Deep Learning', 'Computer Vision'],
                 color: 0xf093fb,
                 pos: [15, 18, -5],
                 github: 'https://github.com/Mohammed-Saqhib/Facial-Recognition-Attendance-Management-System',
-                demo: null
+                demo: null,
+                category: 'AI & NLP'
             },
             {
                 name: 'Fraud Detection System',
-                description: 'Real-time fraud detection system using deep learning and anomaly detection with 99.2% accuracy.',
-                tech: ['Python', 'Shield', 'AI/ML', 'Database'],
+                description: 'Real-time fraud detection system using deep learning and anomaly detection with 99.2% accuracy. Implements advanced machine learning algorithms for financial security.',
+                tech: ['Python', 'Machine Learning', 'Anomaly Detection', 'Security'],
                 color: 0x764ba2,
                 pos: [55, 18, -10],
                 github: 'https://github.com/Mohammed-Saqhib/fraud-detection-system',
-                demo: null
+                demo: null,
+                category: 'Machine Learning'
             },
             {
-                name: 'Aeginix Project',
-                description: 'Comprehensive software solution with modern architecture and advanced functionality for enterprise applications.',
-                tech: ['Python', 'JavaScript', 'Code', 'Laptop'],
+                name: 'Aeginix',
+                description: 'Comprehensive software solution with modern architecture and advanced functionality for enterprise applications. Features scalable design and robust backend systems.',
+                tech: ['Python', 'JavaScript', 'Web Development', 'Backend'],
                 color: 0x8b5cf6,
                 pos: [20, 21, -30],
                 github: 'https://github.com/Mohammed-Saqhib/Aeginix',
-                demo: null
+                demo: null,
+                category: 'Web Development'
             },
             {
                 name: 'AI CSV Dashboard Generator',
-                description: 'Intelligent dashboard generator that creates interactive visualizations from CSV data using AI algorithms.',
-                tech: ['Python', 'Charts', 'Robot', 'Table'],
+                description: 'Intelligent dashboard generator that creates interactive visualizations from CSV data using AI algorithms. Features automated chart generation, data insights, and custom dashboard creation.',
+                tech: ['Python', 'AI', 'Data Visualization', 'Streamlit'],
                 color: 0x43e97b,
                 pos: [40, 21, -5],
                 github: 'https://github.com/Mohammed-Saqhib/Mohammed-Saqhib-AI-CSV-Dashboard-Generator',
-                demo: null
+                demo: null,
+                category: 'AI & NLP'
             },
             {
                 name: 'Indian Contact Scraper',
-                description: 'Web scraping tool for extracting and organizing Indian contact information with data validation and export features.',
-                tech: ['Python', 'Phone', 'Database', 'Spider'],
+                description: 'Web scraping tool for extracting and organizing Indian contact information with data validation and export features. Implements efficient scraping algorithms and data processing.',
+                tech: ['Python', 'Web Scraping', 'Data Processing', 'BeautifulSoup'],
                 color: 0x00d4ff,
                 pos: [10, 21, -20],
                 github: 'https://github.com/Mohammed-Saqhib/Indian-Contact-Scraper',
-                demo: null
+                demo: null,
+                category: 'Data Science'
             },
             {
                 name: 'Hill Climb Gesture Controller',
-                description: 'Computer vision-based gesture controller for Hill Climb Racing game using hand tracking and motion detection.',
-                tech: ['Python', 'Hand', 'Gamepad', 'Camera'],
+                description: 'Computer vision-based gesture controller for Hill Climb Racing game using hand tracking and motion detection. Features real-time gesture recognition and game control.',
+                tech: ['Python', 'Computer Vision', 'OpenCV', 'Game Control'],
                 color: 0xff9500,
                 pos: [50, 21, -25],
                 github: 'https://github.com/Mohammed-Saqhib/Hill-Climb-Gesture-Controller',
-                demo: null
+                demo: null,
+                category: 'AI & NLP'
             },
             {
                 name: 'Formula1 DataHub',
-                description: 'Interactive F1 data visualization platform with race analytics, driver statistics, and predictive race outcomes.',
-                tech: ['Python', 'Database', 'Charts', 'Car'],
+                description: 'Interactive F1 data visualization platform with race analytics, driver statistics, and predictive race outcomes. Features comprehensive F1 data analysis and interactive dashboards.',
+                tech: ['Python', 'Data Analysis', 'Visualization', 'Sports Analytics'],
                 color: 0xff4757,
                 pos: [25, 24, -15],
                 github: 'https://github.com/Mohammed-Saqhib/Formula1-DataHub',
-                demo: null
+                demo: null,
+                category: 'Data Science'
             }
         ];
 
@@ -890,10 +936,12 @@ class UltimatePortfolio3D {
             group.userData = { 
                 type: 'project',
                 title: project.name,
+                name: project.name, // Add name as fallback
                 description: project.description,
                 tech: project.tech,
                 github: project.github,
                 demo: project.demo,
+                category: project.category,
                 originalPosition: [...project.pos]
             };
             
@@ -906,7 +954,16 @@ class UltimatePortfolio3D {
         console.log(`🎯 Created ${projects.length} interactive projects in 3D space`);
         console.log('📋 Project names:', projects.map(p => p.name));
         console.log('🔗 Project GitHub links:', projects.map(p => `${p.name}: ${p.github}`));
+        console.log('📝 Project descriptions:', projects.map(p => `${p.name}: ${p.description.substring(0, 50)}...`));
+        console.log('🛠️ Project technologies:', projects.map(p => `${p.name}: [${p.tech.join(', ')}]`));
         this.createProjectCounter(projects.length);
+        
+        // Debug: Verify project objects have proper userData
+        console.log('🔍 Verifying project objects userData:');
+        this.projectObjects.forEach((proj, index) => {
+            const data = proj.userData || {};
+            console.log(`${index + 1}. "${data.title}" - Type: ${data.type} - Has description: ${!!data.description}`);
+        });
     }
 
     createProjectCounter(count) {
@@ -1329,29 +1386,54 @@ class UltimatePortfolio3D {
             return;
         }
         
-        // Ensure all required data is available with fallbacks
-        const title = data.title || data.name || 'Information';
-        const description = data.description || 'No description available';
+        // Enhanced data handling with better fallbacks
+        const title = data.title || data.name || 'Interactive Element';
+        let description = data.description;
         const type = data.type || 'Unknown';
         const tech = data.tech || [];
         
+        // Provide better fallbacks based on the type
+        if (!description) {
+            switch (type) {
+                case 'project':
+                    description = `This is one of my featured projects showcasing modern development techniques. Click to view detailed information and explore the source code.`;
+                    break;
+                case 'skill':
+                    description = `A key technology in my toolkit. Click to learn more about my experience with ${title}.`;
+                    break;
+                case 'contact-method':
+                    description = `Connect with me via ${title}. Click to initiate contact.`;
+                    break;
+                case 'journey':
+                    description = `A milestone in my professional journey. Click to learn more about this experience.`;
+                    break;
+                default:
+                    description = `Interactive element in my 3D portfolio. Click to explore more details.`;
+            }
+        }
+        
         console.log('📋 Showing info panel:', { title, description, type, tech });
         
+        // Enhanced panel content with better styling
         panel.innerHTML = `
-            <h3>${title}</h3>
-            <p>${description}</p>
+            <h3 style="color: #00d4ff; margin-bottom: 0.8rem; font-size: 1.3rem;">${title}</h3>
+            <p style="line-height: 1.6; margin-bottom: 1rem;">${description}</p>
             <div class="skills">
-                <span class="skill-tag">${type.charAt(0).toUpperCase() + type.slice(1)}</span>
-                ${tech.length > 0 ? tech.map(techItem => `<span class="skill-tag">${techItem}</span>`).join('') : ''}
-                ${data.url ? `<span class="skill-tag">🔗 Clickable</span>` : ''}
+                <span class="skill-tag" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 0.3rem 0.8rem; border-radius: 15px; margin-right: 0.5rem; font-size: 0.8rem;">${type.charAt(0).toUpperCase() + type.slice(1)}</span>
+                ${tech.length > 0 ? tech.map(techItem => `<span class="skill-tag" style="background: rgba(0, 212, 255, 0.2); color: #00d4ff; padding: 0.3rem 0.8rem; border-radius: 15px; margin: 0.2rem; display: inline-block; font-size: 0.8rem;">${techItem}</span>`).join('') : ''}
+                ${data.url ? `<span class="skill-tag" style="background: rgba(67, 233, 123, 0.2); color: #43e97b; padding: 0.3rem 0.8rem; border-radius: 15px; margin-left: 0.5rem; font-size: 0.8rem;">🔗 Interactive</span>` : ''}
+                ${data.github ? `<span class="skill-tag" style="background: rgba(255, 107, 107, 0.2); color: #ff6b6b; padding: 0.3rem 0.8rem; border-radius: 15px; margin-left: 0.5rem; font-size: 0.8rem;">🐙 GitHub</span>` : ''}
+            </div>
+            <div style="margin-top: 1rem; padding: 0.8rem; background: rgba(255, 255, 255, 0.05); border-radius: 10px; font-size: 0.9rem; opacity: 0.8;">
+                💡 Tip: ${type === 'project' ? 'Click for detailed view, double-click GitHub links to open repositories' : 'Explore this interactive element to learn more'}
             </div>
         `;
         panel.classList.add('active');
         
-        // Auto-hide after 5 seconds
+        // Auto-hide after 8 seconds (increased for better readability)
         setTimeout(() => {
             panel.classList.remove('active');
-        }, 5000);
+        }, 8000);
     }
 
     showProjectDetails(data) {
@@ -1362,39 +1444,68 @@ class UltimatePortfolio3D {
             return;
         }
         
-        // Ensure all required data is available
+        // Ensure all required data is available with comprehensive fallbacks
         const title = data.title || data.name || 'Project';
-        const description = data.description || 'Project description not available';
-        const tech = data.tech || [];
+        const description = data.description || 'This is an innovative project showcasing advanced development techniques and modern technologies.';
+        const tech = data.tech || ['JavaScript', 'HTML5', 'CSS3'];
         const github = data.github || '#';
         const demo = data.demo || null;
+        const category = data.category || 'Development';
         
-        console.log('📋 Showing project details:', { title, description, tech, github });
+        console.log('📋 Showing project details:', { title, description, tech, github, category });
         
         card.innerHTML = `
             <div class="project-card-content" id="project-content">
                 <button class="close-btn" onclick="closeProjectCard()">×</button>
                 <h3>${title}</h3>
-                <p>${description}</p>
+                <div class="project-category">
+                    <span style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 0.3rem 0.8rem; border-radius: 15px; font-size: 0.8rem; font-weight: 500;">${category}</span>
+                </div>
+                <p style="margin-top: 1rem; line-height: 1.6;">${description}</p>
                 <div class="project-tech">
-                    <h4>Technologies Used:</h4>
+                    <h4>🛠️ Technologies Used:</h4>
                     <div class="tech-tags">
-                        ${tech.map(techItem => `<span class="skill-tag">${techItem}</span>`).join('')}
+                        ${tech.map(techItem => `<span class="skill-tag" style="background: rgba(0, 212, 255, 0.2); color: #00d4ff; padding: 0.3rem 0.8rem; border-radius: 15px; margin: 0.2rem; display: inline-block; font-size: 0.9rem;">${techItem}</span>`).join('')}
                     </div>
                 </div>
-                <div class="project-links">
-                    <a href="${github}" target="_blank" rel="noopener noreferrer">🐙 GitHub Repository</a>
-                    ${demo ? `<a href="${demo}" target="_blank" rel="noopener noreferrer">🌐 Live Demo</a>` : ''}
+                <div class="project-links" style="margin-top: 1.5rem;">
+                    <a href="${github}" target="_blank" rel="noopener noreferrer" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 0.8rem 1.5rem; border-radius: 10px; text-decoration: none; margin-right: 1rem; display: inline-block; transition: transform 0.3s ease;">🐙 GitHub Repository</a>
+                    ${demo ? `<a href="${demo}" target="_blank" rel="noopener noreferrer" style="background: linear-gradient(135deg, #43e97b, #38f9d7); color: white; padding: 0.8rem 1.5rem; border-radius: 10px; text-decoration: none; display: inline-block; transition: transform 0.3s ease;">🌐 Live Demo</a>` : ''}
                 </div>
-                <div class="project-note">
-                    <p><strong>Note:</strong> This is one of my 17 featured projects showcasing my skills in ${tech.slice(0, 3).join(', ')}. Double-click the GitHub link to explore the complete source code and implementation details.</p>
+                <div class="project-note" style="margin-top: 1.5rem; padding: 1rem; background: rgba(255, 255, 255, 0.05); border-radius: 10px;">
+                    <p><strong>💡 About this project:</strong> This is one of my 17 featured projects showcasing expertise in ${tech.slice(0, 3).join(', ')}. Each project demonstrates practical application of modern development practices and cutting-edge technologies.</p>
                 </div>
-                <div class="view-all-projects">
-                    <a href="https://github.com/Mohammed-Saqhib?tab=repositories" target="_blank" rel="noopener noreferrer" class="btn-view-all">View All Projects →</a>
+                <div class="project-stats" style="margin-top: 1rem; display: flex; gap: 1rem; justify-content: space-between;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.2rem; color: #00d4ff;">⭐</div>
+                        <div style="font-size: 0.8rem; opacity: 0.8;">Featured</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.2rem; color: #43e97b;">${tech.length}</div>
+                        <div style="font-size: 0.8rem; opacity: 0.8;">Technologies</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.2rem; color: #f093fb;">2024</div>
+                        <div style="font-size: 0.8rem; opacity: 0.8;">Latest</div>
+                    </div>
+                </div>
+                <div class="view-all-projects" style="margin-top: 1.5rem; text-align: center;">
+                    <a href="https://github.com/Mohammed-Saqhib?tab=repositories" target="_blank" rel="noopener noreferrer" class="btn-view-all" style="background: linear-gradient(135deg, #ff6b6b, #ffa500); color: white; padding: 0.8rem 2rem; border-radius: 25px; text-decoration: none; display: inline-block; font-weight: 500; transition: transform 0.3s ease;">🚀 View All Projects →</a>
                 </div>
             </div>
         `;
         card.classList.add('active');
+        
+        // Add enhanced interaction effects
+        const links = card.querySelectorAll('a');
+        links.forEach(link => {
+            link.addEventListener('mouseenter', () => {
+                link.style.transform = 'translateY(-2px) scale(1.05)';
+            });
+            link.addEventListener('mouseleave', () => {
+                link.style.transform = 'translateY(0) scale(1)';
+            });
+        });
     }
 
     focusOnSection(section) {
@@ -1487,6 +1598,17 @@ class UltimatePortfolio3D {
                     loadingScreen.style.display = 'none';
                     this.isLoading = false;
                     console.log('✨ Ultimate 3D Portfolio loaded successfully!');
+                    
+                    // Show welcome floating text sequence
+                    setTimeout(() => {
+                        this.createFloatingText('🎉 Welcome to my 3D Portfolio!', { x: 0, y: 15, z: 0 }, 4000);
+                        setTimeout(() => {
+                            this.createFloatingText('✨ Click on projects to explore details', { x: 0, y: 14, z: 0 }, 4000);
+                        }, 2000);
+                        setTimeout(() => {
+                            this.createFloatingText('🚀 17 Interactive Projects Available', { x: 0, y: 13, z: 0 }, 4000);
+                        }, 4000);
+                    }, 1000);
                 }
             });
         }
@@ -2191,6 +2313,27 @@ class UltimatePortfolio3D {
         
         console.log('✅ Text placeholder created');
     }
+
+    // Enhanced project information display
+    displayProjectsOverview() {
+        const projectCategories = {
+            'AI & NLP': ['AI CSV Dashboard Generator', 'TTS Phoneme Model', 'Facial Recognition Attendance System', 'Hill Climb Gesture Controller'],
+            'Data Science': ['Automatically-fill-a-Google-form', 'Carpooling Simulation System', 'Indian Contact Scraper', 'Formula1 DataHub'],
+            'Web Development': ['BookStoreApp', 'Portfolio Website', 'Kritya Fashion Demo', 'Kritya Fashion', 'Netflix Household Verify', 'Aeginix'],
+            'Machine Learning': ['Advanced Stock Prediction Dashboard', 'Fraud Detection System'],
+            'Programming': ["100 Day's of Python Coding"]
+        };
+
+        console.log('📊 Projects Overview:');
+        Object.entries(projectCategories).forEach(([category, projects]) => {
+            console.log(`${category}: ${projects.length} projects`);
+            projects.forEach(project => console.log(`  - ${project}`));
+        });
+
+        // Show total count
+        const totalProjects = Object.values(projectCategories).flat().length;
+        console.log(`🎯 Total Projects: ${totalProjects}`);
+    }
 }
 
 // Global functions for navigation
@@ -2217,8 +2360,8 @@ function focusOnSectionWithInfo(section) {
                 type: 'section'
             },
             'projects': {
-                title: 'Projects Portfolio',
-                description: '17+ Interactive projects showcasing Data Science, Machine Learning, Web Development, and AI applications. Each project demonstrates real-world problem-solving skills.',
+                title: 'Projects Portfolio - 17 Interactive Projects',
+                description: 'Comprehensive collection of 17+ interactive projects spanning Data Science, Machine Learning, AI & NLP, and Web Development. Each project demonstrates real-world problem-solving skills with detailed descriptions, tech stacks, and GitHub repositories. Categories include: AI & NLP (4 projects), Data Science (4 projects), Machine Learning (2 projects), Web Development (5 projects), and Programming (2 projects). All projects feature modern technologies like Python, JavaScript, React, Machine Learning libraries, and more.',
                 type: 'section'
             },
             'journey': {

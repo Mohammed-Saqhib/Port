@@ -1119,7 +1119,8 @@ class UltimatePortfolio3D {
         const contactMethods = [
             { name: 'Email', icon: '📧', color: 0x00d4ff, angle: 0, url: 'mailto:msaqhib76@gmail.com' },
             { name: 'LinkedIn', icon: '💼', color: 0x0077b5, angle: Math.PI / 2, url: 'http://www.linkedin.com/in/mohammed-saqhib-87b8b325a' },
-            { name: 'GitHub', icon: '🐙', color: 0x333333, angle: Math.PI, url: 'https://github.com/Mohammed-Saqhib' }
+            { name: 'GitHub', icon: '🐙', color: 0x333333, angle: Math.PI, url: 'https://github.com/Mohammed-Saqhib' },
+            { name: 'WhatsApp', icon: '📱', color: 0x25d366, angle: 3 * Math.PI / 2, url: 'https://wa.me/qr/PDPG3AVKGNRAF1' }
         ];
 
         contactMethods.forEach((method, index) => {
@@ -2406,5 +2407,4 @@ function closeProjectCard() {
 window.ultimatePortfolio3D = new UltimatePortfolio3D();
 
 // Enhanced navigation with floating info
-window.ultimatePortfolio3D.enhanceNavigation();
 window.ultimatePortfolio3D.enhanceNavigation();
